@@ -30,22 +30,24 @@ base class StreamAnalysis extends Struct {
   external Array<StreamBoutSegment> bouts;
 }
 
-typedef CutStreamC = Pointer<Void> Function(
-    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Uint8, Pointer<Utf8>);
-typedef CutStreamDart = Pointer<Void> Function(
-    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, int, Pointer<Utf8>);
+typedef CutStreamC = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
+    Pointer<Utf8>, Pointer<Utf8>, Uint8, Pointer<Utf8>);
+typedef CutStreamDart = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
+    Pointer<Utf8>, Pointer<Utf8>, int, Pointer<Utf8>);
 
 class NativeLibrary {
   late final DynamicLibrary _lib;
 
   NativeLibrary() {
-    print("Path: ${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/libvideo_review.dylib");
+    print(
+        "Path: ${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/libvideo_review.dylib");
     _lib = Platform.isMacOS
-        ? DynamicLibrary.open('${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/libvideo_review.dylib')
-        : throw UnsupportedError('Unsupported platform');
+        ? DynamicLibrary.open(
+            '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/libvideo_review.dylib')
+        : DynamicLibrary.open(
+            '${Directory(Platform.resolvedExecutable).parent.path}\\data\\flutter_assets\\assets\\video_review.dll');
   }
 
-  late final CutStreamDart cutStream = _lib
-      .lookup<NativeFunction<CutStreamC>>('cut_stream')
-      .asFunction();
+  late final CutStreamDart cutStream =
+      _lib.lookup<NativeFunction<CutStreamC>>('cut_stream').asFunction();
 }

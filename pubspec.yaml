@@ -22,3 +22,26 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - ./assets/archive.dll
+    - ./assets/bz2.dll
+    - ./assets/gif.dll
+    - ./assets/jpeg62.dll
+    - ./assets/leptonica-1.85.0.dll
+    - ./assets/libcrypto-3-x64.dll
+    - ./assets/libcurl.dll
+    - ./assets/liblzma.dll
+    - ./assets/libpng16.dll
+    - ./assets/libsharpyuv.dll
+    - ./assets/libwebp.dll
+    - ./assets/libwebpmux.dll
+    - ./assets/lz4.dll
+    - ./assets/openjp2.dll
+    - ./assets/tesseract55.dll
+    - ./assets/tiff.dll
+    - ./assets/video_review.dll
+    - ./assets/video_review.exp
+    - ./assets/video_review.lib
+    - ./assets/zlib1.dll
+    - ./assets/zstd.dll
+    - ./assets/svm_model.xml

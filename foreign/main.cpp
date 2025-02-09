@@ -1,9 +1,57 @@
 #include <cstdint>
+#ifndef __ARM_NEON
+// Use standard types for other platforms.
+typedef float float16_t;
+typedef double float64_t;
+#endif
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT __attribute__((visibility("default")))
+#endif
 #include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
+#include <tesseract/baseapi.h>
 #include <filesystem>
 
-extern "C" int32_t add(int32_t a, int32_t b) {
+struct VideoAnalysisTouch
+{
+    uint32_t frame;
+    uint8_t score1;
+    uint8_t score2;
+};
+
+struct VideoAnalysis
+{
+    uint8_t touch_count;
+    VideoAnalysisTouch touches[64];
+};
+
+struct StreamBoutSegment
+{
+    int32_t start_frame;
+    int32_t end_frame;
+    const char* name_left;
+    const char* name_right;
+};
+
+struct StreamAnalysis
+{
+    float64_t fps;
+    int32_t frame_count;
+    uint8_t bout_count;
+    StreamBoutSegment bouts[64];
+};
+
+extern "C" {
+    EXPORT int32_t add(int32_t a, int32_t b);
+    VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id);
+    EXPORT void js_memcpy(void* dest, void* source, size_t size);
+    EXPORT void train_nn();
+    EXPORT StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder);
+}
+
+int32_t add(int32_t a, int32_t b) {
     return a + b;
 }
 
@@ -40,22 +88,22 @@ const OverlayConfig OVERLAY_STANDARD_1 = {
     .id = 0,
     .threshold = 0.171,
     .symmetric_threshold = false,
-    .red = (VideoROI){ .x = (float)228 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
-    .green = (VideoROI){ .x = (float)1063 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
-    .red_score = (VideoROI){ .x = (float)792 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 },
-    .green_score = (VideoROI){ .x = (float)1060 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 }
+    .red = {.x = (float)228 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
+    .green = {.x = (float)1063 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
+    .red_score = {.x = (float)792 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 },
+    .green_score = {.x = (float)1060 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 }
 };
 
 const OverlayConfig OVERLAY_STANDARD_2 = {
     .id = 1,
     .threshold = 0.19,
     .symmetric_threshold = true,
-    .red = (VideoROI){ .x = (float)160 / 1280, .y = (float)652 / 720, .width = (float)360 / 1280, .height = (float)16 / 720 },
-    .green = (VideoROI){ .x = (float)720 / 1280, .y = (float)652 / 720, .width = (float)430 / 1280, .height = (float)16 / 720 },
-    .red_score = (VideoROI){ .x = (float)517 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
-    .green_score = (VideoROI){ .x = (float)718 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
-    .red_name = (VideoROI){ .x = (float)128 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 },
-    .green_name = (VideoROI){ .x = (float)374 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 }
+    .red = {.x = (float)160 / 1280, .y = (float)652 / 720, .width = (float)360 / 1280, .height = (float)16 / 720 },
+    .green = {.x = (float)720 / 1280, .y = (float)652 / 720, .width = (float)430 / 1280, .height = (float)16 / 720 },
+    .red_score = {.x = (float)517 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
+    .green_score = {.x = (float)718 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
+    .red_name = {.x = (float)128 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 },
+    .green_name = {.x = (float)374 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 }
 };
 
 const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2 };
@@ -209,19 +257,6 @@ cv::Rect roiFromVideoInfo(int width, int height, VideoROI roi)
     return cv::Rect(width * roi.x, height * roi.y, width * roi.width, height * roi.height);
 }
 
-struct VideoAnalysisTouch
-{
-    uint32_t frame;
-    uint8_t score1;
-    uint8_t score2;
-};
-
-struct VideoAnalysis
-{
-    uint8_t touch_count;
-    VideoAnalysisTouch touches[64];
-};
-
 cv::Ptr<cv::ml::SVM> preload_digit_model(const char* svm_path)
 {
     std::filesystem::path exe_path = std::filesystem::current_path();
@@ -260,9 +295,9 @@ VideoAnalysis* process(const char* video_path, OverlayConfig overlay)
     std::cout << "Selected overlay: " << overlay << std::endl;
 
     std::cout << "FPS: " << fps << "\n"
-            << "Width: " << width << "\n"
-            << "Height: " << height << "\n"
-            << "Total Frames: " << frame_count << std::endl;
+        << "Width: " << width << "\n"
+        << "Height: " << height << "\n"
+        << "Total Frames: " << frame_count << std::endl;
 
     cv::Rect redRoi = roiFromVideoInfo(width, height, overlay.red);
     cv::Rect greenRoi = roiFromVideoInfo(width, height, overlay.green);
@@ -277,22 +312,22 @@ VideoAnalysis* process(const char* video_path, OverlayConfig overlay)
     {
         // cv::rectangle(frame, redRoi, cv::Scalar(0, 255, 0), 2);
         imshow("tracker", frame);
-        redRoi = selectROI("tracker",frame);
+        redRoi = selectROI("tracker", frame);
         std::cout << "Red ROI: " << redRoi << std::endl;
     }
     while (greenRoi.width == 0 || greenRoi.height == 0)
     {
-        greenRoi = selectROI("tracker",frame);
+        greenRoi = selectROI("tracker", frame);
         std::cout << "Green ROI: " << greenRoi << std::endl;
     }
     while (redScoreRoi.width == 0 || redScoreRoi.height == 0)
     {
-        redScoreRoi = selectROI("tracker",frame);
+        redScoreRoi = selectROI("tracker", frame);
         std::cout << "Red score ROI: " << redScoreRoi << std::endl;
     }
     while (greenScoreRoi.width == 0 || greenScoreRoi.height == 0)
     {
-        greenScoreRoi = selectROI("tracker",frame);
+        greenScoreRoi = selectROI("tracker", frame);
         std::cout << "Green score ROI: " << greenScoreRoi << std::endl;
     }
 
@@ -403,7 +438,7 @@ VideoAnalysis* process(const char* video_path, OverlayConfig overlay)
     return analysis;
 }
 
-extern "C" VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id)
+VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id)
 {
     try
     {
@@ -417,27 +452,9 @@ extern "C" VideoAnalysis* find_video_touches(const char* video_path, uint8_t ove
     return 0;
 }
 
-extern "C" void js_memcpy(void* dest, void* source, size_t size) {
+void js_memcpy(void* dest, void* source, size_t size) {
     memcpy(dest, source, size);
 }
-
-struct StreamBoutSegment
-{
-    int32_t start_frame;
-    int32_t end_frame;
-    const char* name_left;
-    const char* name_right;
-};
-
-struct StreamAnalysis
-{
-    float64_t fps;
-    int32_t frame_count;
-    uint8_t bout_count;
-    StreamBoutSegment bouts[64];
-};
-
-#include <tesseract/baseapi.h>
 
 std::string formatString(const std::string& input) {
     size_t start = 0, end = input.size();
@@ -464,7 +481,8 @@ std::string formatString(const std::string& input) {
                 currentWord.clear();
             }
             capitalize = true;
-        } else {
+        }
+        else {
             currentWord.push_back(capitalize ? std::toupper(input[i]) : std::tolower(input[i]));
             capitalize = false;
         }
@@ -487,7 +505,7 @@ std::string formatString(const std::string& input) {
     return result;
 }
 
-extern "C" StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder)
+StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder)
 {
     StreamAnalysis* analysis = new StreamAnalysis();
 
@@ -505,7 +523,7 @@ extern "C" StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesse
     const int SKIP_SECONDS = 15;
     // Minimum length of bout (to prevent fluctuations in score)
     const int MIN_BOUT_SECONDS = 60;
-    
+
     try
     {
         cv::VideoCapture cap(video_path, cv::CAP_FFMPEG);
@@ -522,10 +540,10 @@ extern "C" StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesse
         analysis->frame_count = frame_count;
 
         std::cout << "Selected overlay: " << overlay << "\n"
-                << "FPS: " << fps << "\n"
-                << "Width: " << width << "\n"
-                << "Height: " << height << "\n"
-                << "Total Frames: " << frame_count << std::endl;
+            << "FPS: " << fps << "\n"
+            << "Width: " << width << "\n"
+            << "Height: " << height << "\n"
+            << "Total Frames: " << frame_count << std::endl;
 
         cv::Rect redRoi = roiFromVideoInfo(width, height, overlay.red);
         cv::Rect greenRoi = roiFromVideoInfo(width, height, overlay.green);
@@ -569,19 +587,19 @@ extern "C" StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesse
 
                 cv::Mat redName = frame(redNameRoi);
                 cv::cvtColor(redName, redName, cv::COLOR_BGR2GRAY);
-                tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step); // Feed binary image to Tesseract
-                std::string red_str = tess.GetUTF8Text(); // Extract text
-                red_str = formatString(red_str);
+                // tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step); // Feed binary image to Tesseract
+                // std::string red_str = tess.GetUTF8Text(); // Extract text
+                // red_str = formatString(red_str);
 
                 cv::Mat greenName = frame(greenNameRoi);
                 cv::cvtColor(greenName, greenName, cv::COLOR_BGR2GRAY);
-                tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step); // Feed binary image to Tesseract
-                std::string green_str = tess.GetUTF8Text(); // Extract text
-                green_str = formatString(green_str);
-                std::cout << "Red name: " << red_str << ", green name: " << green_str << std::endl;
+                // tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step); // Feed binary image to Tesseract
+                // std::string green_str = tess.GetUTF8Text(); // Extract text
+                // green_str = formatString(green_str);
+                // std::cout << "Red name: " << red_str << ", green name: " << green_str << std::endl;
 
-                analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
-                analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
+                // analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
+                // analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
             }
             if (bout_running && !score_nonzero)
             {
@@ -613,8 +631,8 @@ extern "C" StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesse
                 std::string bout_name = std::string("/") + bout.name_left + std::string(" vs ") + bout.name_right + ".mp4";
                 std::cout << "Start: " << start << ", end: " << end << ", duration: " << end - start << std::endl;
                 std::string command = std::string(ffmpeg_path) + " -loglevel quiet -ss " + std::to_string(start) + " -i \"" +
-                                      std::string(video_path) + "\" -t " + std::to_string(end - start) +
-                                      " -c copy -y \"" + std::string(output_folder) + bout_name + "\"";
+                    std::string(video_path) + "\" -t " + std::to_string(end - start) +
+                    " -c copy -y \"" + std::string(output_folder) + bout_name + "\"";
                 std::system(command.c_str());
             }
         }

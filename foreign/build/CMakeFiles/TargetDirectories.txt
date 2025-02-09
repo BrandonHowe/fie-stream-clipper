@@ -1,7 +1,4 @@
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/video_review.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/edit_cache.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/rebuild_cache.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/list_install_components.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/install.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/install/local.dir
-/Users/brandonhowe/Documents/NJIT/fie_stream_clipper/foreign/build/CMakeFiles/install/strip.dir
+D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/video_review.dir
+D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/INSTALL.dir
+D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/ALL_BUILD.dir
+D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/ZERO_CHECK.dir

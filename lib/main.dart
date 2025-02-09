@@ -33,6 +33,13 @@ class _MainAppState extends State<MainApp> {
   bool converting = false;
   String? errorStr;
 
+  String? selectedOverlay;
+  final List<Map<String, dynamic>> overlays = [
+    {'label': 'Item 1', 'image': 'assets/item1.png'},
+    {'label': 'Item 2', 'image': 'assets/item2.png'},
+    {'label': 'Item 3', 'image': 'assets/item3.png'},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -45,22 +52,25 @@ class _MainAppState extends State<MainApp> {
   }
 
   Future<String> getDefaultOutputFolder() async {
-    final appDir = await getApplicationDocumentsDirectory(); // Get app's documents directory
+    final appDir =
+        await getApplicationDocumentsDirectory(); // Get app's documents directory
     final streamClipsDir = Directory('${appDir.path}/stream_clips');
 
     if (!await streamClipsDir.exists()) {
-      await streamClipsDir.create(recursive: true); // Create directory if it doesn't exist
+      await streamClipsDir.create(
+          recursive: true); // Create directory if it doesn't exist
     }
+
+    print("Default folder: ${streamClipsDir.path}");
 
     return streamClipsDir.path;
   }
 
   void selectStreamFile() async {
     final result = await FilePicker.platform.pickFiles(
-      dialogTitle: "Select stream file",
-      type: FileType.video,
-      initialDirectory: (await getDownloadsDirectory())?.path
-    );
+        dialogTitle: "Select stream file",
+        type: FileType.video,
+        initialDirectory: (await getDownloadsDirectory())?.path);
     if (result != null) {
       final filePath = result.files.single.path;
       print('Selected file: $filePath');
@@ -69,12 +79,11 @@ class _MainAppState extends State<MainApp> {
       });
     }
   }
-  
+
   void selectOutputFolder() async {
     final result = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: "Select output folder",
-      initialDirectory: await getDefaultOutputFolder()
-    );
+        dialogTitle: "Select output folder",
+        initialDirectory: await getDefaultOutputFolder());
     if (result != null) {
       final filePath = result;
       print('Selected output folder: $filePath');
@@ -115,18 +124,28 @@ class _MainAppState extends State<MainApp> {
     try {
       if (selectedFile == null || outputFolder == null) return;
       final ffi = NativeLibrary();
-      final ffmpegPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/ffmpeg'.toNativeUtf8();
-      final svmModelPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'.toNativeUtf8();
-      final tesseractPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/'.toNativeUtf8();
+      final ffmpegPtr =
+          '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/ffmpeg'
+              .toNativeUtf8();
+      final svmModelPtr = (Platform.isMacOS
+              ? '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'
+              : '${Directory(Platform.resolvedExecutable).path}/flutter_assets/assets/svm_model.xml')
+          .toNativeUtf8();
+      final tesseractPtr =
+          '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/'
+              .toNativeUtf8();
       final selectedFilePtr = selectedFile!.toNativeUtf8();
       final outputFolderPtr = outputFolder!.toNativeUtf8();
 
-      final resultPtr = ffi.cutStream(ffmpegPtr, tesseractPtr, svmModelPtr, selectedFilePtr, 1, outputFolderPtr);
+      final resultPtr = ffi.cutStream(ffmpegPtr, tesseractPtr, svmModelPtr,
+          selectedFilePtr, 1, outputFolderPtr);
 
       malloc.free(selectedFilePtr);
       malloc.free(outputFolderPtr);
 
-      sendPort.send(resultPtr != nullptr ? 'Stream successfully clipped!' : 'Stream analysis failed');
+      sendPort.send(resultPtr != nullptr
+          ? 'Stream successfully clipped!'
+          : 'Stream analysis failed');
     } catch (e) {
       sendPort.send("Error: $e");
     }
@@ -134,130 +153,164 @@ class _MainAppState extends State<MainApp> {
 
   void clipStream2() {
     final ffi = NativeLibrary();
-      final ffmpegPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/ffmpeg'.toNativeUtf8();
-      final svmModelPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'.toNativeUtf8();
-      final tesseractPtr = '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/'.toNativeUtf8();
-      final selectedFilePtr = selectedFile!.toNativeUtf8();
-      final outputFolderPtr = outputFolder!.toNativeUtf8();
+    final ffmpegPtr =
+        '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/ffmpeg'
+            .toNativeUtf8();
+    final svmModelPtr = (Platform.isMacOS
+            ? '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'
+            : '${Directory(Platform.resolvedExecutable).parent.path}/data/flutter_assets/assets/svm_model.xml')
+        .toNativeUtf8();
+    final tesseractPtr =
+        '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/'
+            .toNativeUtf8();
+    final selectedFilePtr = selectedFile!.toNativeUtf8();
+    final outputFolderPtr = outputFolder!.toNativeUtf8();
 
-      final resultPtr = ffi.cutStream(ffmpegPtr, tesseractPtr, svmModelPtr, selectedFilePtr, 1, outputFolderPtr);
+    final resultPtr = ffi.cutStream(ffmpegPtr, tesseractPtr, svmModelPtr,
+        selectedFilePtr, 1, outputFolderPtr);
 
-      malloc.free(selectedFilePtr);
-      malloc.free(outputFolderPtr);
+    malloc.free(selectedFilePtr);
+    malloc.free(outputFolderPtr);
 
-      _messengerKey.currentState!.showSnackBar(
-          SnackBar(content: Text(resultPtr != nullptr ? 'Stream successfully clipped!' : 'Stream analysis failed')),
-        );
+    _messengerKey.currentState!.showSnackBar(
+      SnackBar(
+          content: Text(resultPtr != nullptr
+              ? 'Stream successfully clipped!'
+              : 'Stream analysis failed')),
+    );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: _messengerKey,
-      home: Scaffold(
-        appBar: AppBar(title: Text('Stream Clipper')),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
+        scaffoldMessengerKey: _messengerKey,
+        home: Scaffold(
+          appBar: AppBar(title: Text('Stream Clipper')),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: selectStreamFile,
-                      child: Text("Select Stream File"),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: selectStreamFile,
+                          child: Text("Select Stream File"),
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(width: 6),
+                        Tooltip(
+                          message: "Show stream file path",
+                          child: IconButton(
+                            icon: Icon(
+                              showStreamPath
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                showStreamPath = !showStreamPath;
+                              });
+                            },
+                          ),
+                        )
+                      ],
                     ),
-                    SizedBox(width: 6),
-                    Tooltip(
-                      message: "Show stream file path",
-                      child: IconButton(
-                        icon: Icon(
-                          showStreamPath ? Icons.visibility_off : Icons.visibility,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            showStreamPath = !showStreamPath;
-                          });
-                        },
-                      ),
-                    )
-                  ],
-                ),
-                if (showStreamPath) ...[
-                  SizedBox(height: 8),
-                  Text('File: ${selectedFile ?? "No file selected"}', style: TextStyle(fontSize: 14)),
-                ],
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: selectOutputFolder,
-                      child: Text("Select Output Folder"),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    if (showStreamPath) ...[
+                      SizedBox(height: 8),
+                      Text('File: ${selectedFile ?? "No file selected"}',
+                          style: TextStyle(fontSize: 14)),
+                    ],
+                    SizedBox(height: 8),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      ElevatedButton(
+                        onPressed: selectOutputFolder,
+                        child: Text("Select Output Folder"),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 6),
-                    Tooltip(
-                      message: "Show output folder path",
-                      child: IconButton(
-                        icon: Icon(
-                          showOutputPath ? Icons.visibility_off : Icons.visibility,
-                          size: 20,
+                      SizedBox(width: 6),
+                      Tooltip(
+                          message: "Show output folder path",
+                          child: IconButton(
+                            icon: Icon(
+                              showOutputPath
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                showOutputPath = !showOutputPath;
+                              });
+                            },
+                          )),
+                      Tooltip(
+                        message: "Open output folder in finder",
+                        child: IconButton(
+                          onPressed: openOutputFolder,
+                          icon: Icon(Icons.folder_open, size: 20),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            showOutputPath = !showOutputPath;
-                          });
-                        },
                       )
-                    ),
-                    Tooltip(
-                      message: "Open output folder in finder",
-                      child: IconButton(
-                        onPressed: openOutputFolder,
-                        icon: Icon(Icons.folder_open, size: 20),
+                    ]),
+                    SizedBox(height: 8),
+                    if (showOutputPath) ...[
+                      Text(
+                        'Folder: ${outputFolderIsDefault ? "Default folder" : outputFolder == null ? "No folder selected" : outputFolder!.length > 40 ? outputFolder!.substring(0, 40) + '...' : outputFolder}',
+                        style: TextStyle(fontSize: 14),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    SizedBox(height: 16),
+                    // DropdownButton<String>(
+                    //   value: selectedOverlay,
+                    //   hint: Text('Select an item'),
+                    //   onChanged: (String? newValue) {
+                    //     setState(() {
+                    //       selectedOverlay = newValue;
+                    //     });
+                    //   },
+                    //   items: overlays.map<DropdownMenuItem<String>>((item) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: item['label'],
+                    //       child: Column(
+                    //         children: [
+                    //           Text(item['label']),
+                    //           Image.asset(item['image'], height: 40, width: 40),
+                    //         ],
+                    //       ),
+                    //     );
+                    //   }).toList(),
+                    // ),
+                    // SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: clipStream2,
+                      child: Text("Clip Stream!"),
+                      style: ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     )
-                  ]
-                ),
-                SizedBox(height: 8),
-                if (showOutputPath) ...[
-                  Text(
-                    'Folder: ${outputFolderIsDefault ? "Default folder" : outputFolder == null ? "No folder selected" : outputFolder!.length > 40 ? outputFolder!.substring(0, 40) + '...' : outputFolder}',
-                    style: TextStyle(fontSize: 14),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: clipStream2,
-                  child: Text("Clip Stream!"),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                )
-              ]
+                  ]),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 }
