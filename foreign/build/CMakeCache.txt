@@ -203,6 +203,105 @@ CURL_DIR:PATH=D:/vcpkg/installed/x64-windows/share/curl
 //Enable pkg-config to detect CURL dependencies
 CURL_USE_PKGCONFIG:BOOL=ON
 
+FFMPEG_FOUND:BOOL=TRUE
+
+FFMPEG_INCLUDE_DIRS:STRING=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_LIBRARIES:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avdevice.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avdevice.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avfilter.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avfilter.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avformat.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avformat.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avcodec.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avcodec.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swresample.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swresample.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swscale.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swscale.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avutil.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avutil.lib
+
+FFMPEG_LIBRARY_DIRS:STRING=D:/vcpkg/installed/x64-windows/lib;D:/vcpkg/installed/x64-windows/debug/lib
+
+//Path to a file.
+FFMPEG_libavcodec_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libavcodec_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avcodec.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avcodec.lib
+
+//Path to a library.
+FFMPEG_libavcodec_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/avcodec.lib
+
+//Path to a library.
+FFMPEG_libavcodec_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/avcodec.lib
+
+FFMPEG_libavcodec_VERSION:STRING=61.19.100
+
+//Path to a file.
+FFMPEG_libavdevice_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libavdevice_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avdevice.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avdevice.lib
+
+//Path to a library.
+FFMPEG_libavdevice_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/avdevice.lib
+
+//Path to a library.
+FFMPEG_libavdevice_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/avdevice.lib
+
+FFMPEG_libavdevice_VERSION:STRING=61.3.100
+
+//Path to a file.
+FFMPEG_libavfilter_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libavfilter_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avfilter.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avfilter.lib
+
+//Path to a library.
+FFMPEG_libavfilter_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/avfilter.lib
+
+//Path to a library.
+FFMPEG_libavfilter_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/avfilter.lib
+
+FFMPEG_libavfilter_VERSION:STRING=10.4.100
+
+//Path to a file.
+FFMPEG_libavformat_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libavformat_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avformat.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avformat.lib
+
+//Path to a library.
+FFMPEG_libavformat_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/avformat.lib
+
+//Path to a library.
+FFMPEG_libavformat_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/avformat.lib
+
+FFMPEG_libavformat_VERSION:STRING=61.7.100
+
+//Path to a file.
+FFMPEG_libavutil_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libavutil_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/avutil.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avutil.lib
+
+//Path to a library.
+FFMPEG_libavutil_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/avutil.lib
+
+//Path to a library.
+FFMPEG_libavutil_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/avutil.lib
+
+FFMPEG_libavutil_VERSION:STRING=59.39.100
+
+//Path to a file.
+FFMPEG_libswresample_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libswresample_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/swresample.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swresample.lib
+
+//Path to a library.
+FFMPEG_libswresample_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/swresample.lib
+
+//Path to a library.
+FFMPEG_libswresample_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/swresample.lib
+
+FFMPEG_libswresample_VERSION:STRING=5.3.100
+
+//Path to a file.
+FFMPEG_libswscale_INCLUDE_DIRS:PATH=D:/vcpkg/installed/x64-windows/include
+
+FFMPEG_libswscale_LIBRARY:STRING=optimized;D:/vcpkg/installed/x64-windows/lib/swscale.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swscale.lib
+
+//Path to a library.
+FFMPEG_libswscale_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/swscale.lib
+
+//Path to a library.
+FFMPEG_libswscale_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/swscale.lib
+
+FFMPEG_libswscale_VERSION:STRING=8.3.100
+
 //The directory containing a CMake configuration file for Leptonica.
 Leptonica_DIR:PATH=D:/vcpkg/installed/x64-windows/share/leptonica
 
@@ -316,7 +415,7 @@ _vcpkg_sharpyuv_LIBRARY_DEBUG:FILEPATH=D:/vcpkg/installed/x64-windows/debug/lib/
 _vcpkg_sharpyuv_LIBRARY_RELEASE:FILEPATH=D:/vcpkg/installed/x64-windows/lib/libsharpyuv.lib
 
 //Dependencies for the target
-video_review_LIB_DEPENDS:STATIC=general;opencv_calib3d;general;opencv_core;general;opencv_dnn;general;opencv_features2d;general;opencv_flann;general;opencv_gapi;general;opencv_highgui;general;opencv_imgcodecs;general;opencv_imgproc;general;opencv_ml;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_video;general;opencv_videoio;general;opencv_world;general;Tesseract::libtesseract;
+video_review_LIB_DEPENDS:STATIC=optimized;D:/vcpkg/installed/x64-windows/lib/avdevice.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avdevice.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avfilter.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avfilter.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avformat.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avformat.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avcodec.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avcodec.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swresample.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swresample.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swscale.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swscale.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avutil.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avutil.lib;general;opencv_calib3d;general;opencv_core;general;opencv_dnn;general;opencv_features2d;general;opencv_flann;general;opencv_gapi;general;opencv_highgui;general;opencv_imgcodecs;general;opencv_imgproc;general;opencv_ml;general;opencv_objdetect;general;opencv_photo;general;opencv_stitching;general;opencv_video;general;opencv_videoio;general;opencv_world;general;Tesseract::libtesseract;
 
 
 ########################
@@ -465,6 +564,36 @@ CURL_LIBRARY_DEBUG:INTERNAL=D:/vcpkg/installed/x64-windows/debug/lib/libcurl-d.l
 CURL_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //vcpkg
 CURL_LIBRARY_RELEASE:INTERNAL=D:/vcpkg/installed/x64-windows/lib/libcurl.lib
+//ADVANCED property for variable: FFMPEG_libavcodec_LIBRARY_DEBUG
+FFMPEG_libavcodec_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavcodec_LIBRARY_RELEASE
+FFMPEG_libavcodec_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavdevice_LIBRARY_DEBUG
+FFMPEG_libavdevice_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavdevice_LIBRARY_RELEASE
+FFMPEG_libavdevice_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavfilter_LIBRARY_DEBUG
+FFMPEG_libavfilter_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavfilter_LIBRARY_RELEASE
+FFMPEG_libavfilter_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavformat_LIBRARY_DEBUG
+FFMPEG_libavformat_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavformat_LIBRARY_RELEASE
+FFMPEG_libavformat_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavutil_LIBRARY_DEBUG
+FFMPEG_libavutil_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libavutil_LIBRARY_RELEASE
+FFMPEG_libavutil_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libswresample_LIBRARY_DEBUG
+FFMPEG_libswresample_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libswresample_LIBRARY_RELEASE
+FFMPEG_libswresample_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libswscale_LIBRARY_DEBUG
+FFMPEG_libswscale_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: FFMPEG_libswscale_LIBRARY_RELEASE
+FFMPEG_libswscale_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
+//Details about finding FFMPEG
+FIND_PACKAGE_MESSAGE_DETAILS_FFMPEG:INTERNAL=[optimized;D:/vcpkg/installed/x64-windows/lib/avdevice.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avdevice.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avfilter.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avfilter.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avformat.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avformat.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avcodec.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avcodec.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swresample.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swresample.lib;optimized;D:/vcpkg/installed/x64-windows/lib/swscale.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/swscale.lib;optimized;D:/vcpkg/installed/x64-windows/lib/avutil.lib;debug;D:/vcpkg/installed/x64-windows/debug/lib/avutil.lib][D:/vcpkg/installed/x64-windows/lib;D:/vcpkg/installed/x64-windows/debug/lib][D:/vcpkg/installed/x64-windows/include][v()]
 //Details about finding LibArchive
 FIND_PACKAGE_MESSAGE_DETAILS_LibArchive:INTERNAL=[D:/vcpkg/installed/x64-windows/lib/archive.lib][D:/vcpkg/installed/x64-windows/include][v3.7.7()]
 //Details about finding OpenCV

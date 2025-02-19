@@ -381,6 +381,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.10.0"
+  window_size:
+    dependency: "direct main"
+    description:
+      path: "plugins/window_size"
+      ref: fd519be1e8398c6b6c2062c2447bac960a71bc02
+      resolved-ref: fd519be1e8398c6b6c2062c2447bac960a71bc02
+      url: "https://github.com/google/flutter-desktop-embedding.git"
+    source: git
+    version: "0.1.0"
   xdg_directories:
     dependency: transitive
     description:

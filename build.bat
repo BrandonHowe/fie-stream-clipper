@@ -6,5 +6,4 @@ cmake .. -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE=D:/vcpkg/scrip
 cmake --build . --config Release
 cd ..\..
 
-copy foreign\build\Release\video_review.dll windows\runner\resources
-copy foreign\build\Release\ assets
+copy foreign\build\Release\ windows\runner\resources\dlls

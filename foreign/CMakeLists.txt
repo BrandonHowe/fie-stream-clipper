@@ -4,16 +4,12 @@ project(VideoReview)
 
 # Specify C++ standard
 set(CMAKE_CXX_STANDARD 20)
-
-set(CMAKE_CXX_FLAGS_RELEASE "/MT")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "Multi-threaded(/MT)") # Optional, but recommended
-set(CMAKE_GENERATOR_PLATFORM "x64")
-set(CMAKE_TOOLCHAIN_FILE "D:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-set(CMAKE_BUILD_TYPE Release)
+set(BUILD_SHARED_LIBS ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 # Find OpenCV package
 if(WIN32)
-    set(OpenCV_DIR "D:\\OpenCV\\opencv\\build\\")
+    set(OpenCV_DIR "D:\\OpenCV\\opencv\\build\\x64\\vc16\\lib\\")
 endif()
 find_package(OpenCV 4.10 REQUIRED)
 
@@ -21,49 +17,49 @@ find_package(OpenCV 4.10 REQUIRED)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/tessdata
         DESTINATION ${CMAKE_BINARY_DIR})
 
+# Find Tesseract package
+if(WIN32)
+    set(Tesseract_DIR "D:/vcpkg/installed/x64-windows/share/tesseract")
+    find_package(Tesseract CONFIG REQUIRED)
+elseif(APPLE)
+    set(TESSERACT_INCLUDE_DIR "/opt/homebrew/Cellar/tesseract/5.5.0/include")
+    set(TESSERACT_LIBRARY_DIR "/opt/homebrew/Cellar/tesseract/5.5.0/lib")
+endif()
+
 # Add the shared library
 add_library(video_review SHARED main.cpp)
+
+# Find ffmpeg
+
+find_package(FFMPEG REQUIRED)
+target_include_directories(video_review PRIVATE ${FFMPEG_INCLUDE_DIRS})
+target_link_directories(video_review PRIVATE ${FFMPEG_LIBRARY_DIRS})
+target_link_libraries(video_review PRIVATE ${FFMPEG_LIBRARIES})
 
 # Include OpenCV headers
 target_include_directories(video_review PRIVATE ${OpenCV_INCLUDE_DIRS})
 
-# Find Tesseract package
+# Link OpenCV and Tesseract
 if(WIN32)
-    # set(SW_BUILD_SHARED_LIBS 1)
-    # set(DEPENDENCIES
-    #     org.sw.demo.google.tesseract.libtesseract-master
-    #     org.sw.demo.intel.opencv.imgproc
-    #     org.sw.demo.intel.opencv.highgui
-    # )
-
-    # find_package(SW REQUIRED)
-    # sw_add_package(${DEPENDENCIES})
-    # sw_execute()
-    set(TESSERACT_INCLUDE_DIR "D:/vcpkg/installed/x64-windows-static/include")
-    set(Tesseract_DIR "D:/vcpkg/installed/x64-windows-static/share/tesseract")
-    # target_include_directories(video_review PUBLIC ${TESSERACT_INCLUDE_DIR})
-    # target_link_libraries(video_review PRIVATE ${OpenCV_LIBS} ${DEPENDENCIES})
-
-    find_package(Tesseract CONFIG REQUIRED)
-    IF (${Tesseract_FOUND})
-        MESSAGE(STATUS "Found Tesseract.")
-    ELSE (${Tesseract_FOUND})
-        MESSAGE(STATUS "Could not locate Tesseract.")
-    ENDIF (${Tesseract_FOUND})
-    # target_include_directories(video_review PUBLIC "D:/vcpkg/installed/x64-windows-static/include")
-    
-    message(STATUS "Tesseract Include Dir: ${Tesseract_INCLUDE_DIRS}")
-    message(STATUS "Tesseract Library: ${Tesseract_LIBRARIES}")
-    message(STATUS "Tesseract Binary Dir: ${Tesseract_BINARY_DIR}")
-    message(STATUS "Tesseract Version: ${Tesseract_VERSION}")
-    # target_link_libraries(video_review PRIVATE ${OpenCV_LIBS} "D:\\vcpkg\\installed\\x64-windows-static\\lib\\tesseract55.lib")
     target_link_libraries(video_review PRIVATE ${OpenCV_LIBS} Tesseract::libtesseract)
+
+    set(OPENCV_DLL_PATH "${OpenCV_DIR}../bin/opencv_world4110.dll")
+    if(EXISTS ${OPENCV_DLL_PATH})
+        message(STATUS "Copying OpenCV DLL: ${OPENCV_DLL_PATH} to ${CMAKE_BINARY_DIR}/Release")
+        add_custom_command(
+            TARGET video_review
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            "${OPENCV_DLL_PATH}"
+            "${CMAKE_BINARY_DIR}/Release"
+        )
+    else()
+        message(WARNING "OpenCV DLL not found: ${OPENCV_DLL_PATH}")
+    endif()
 elseif(APPLE)
-    set(TESSERACT_INCLUDE_DIR "/opt/homebrew/Cellar/tesseract/5.5.0/include")
-    set(TESSERACT_LIBRARY_DIR "/opt/homebrew/Cellar/tesseract/5.5.0/lib")
     include_directories(${TESSERACT_INCLUDE_DIR})
     link_directories(${TESSERACT_LIBRARY_DIR})
-    target_link_libraries(video_review ${OpenCV_LIBS} tesseract)
+    target_link_libraries(video_review PRIVATE ${OpenCV_LIBS} tesseract)
 endif()
 
 # Set the output directory for the shared library

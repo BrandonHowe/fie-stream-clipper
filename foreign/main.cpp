@@ -13,6 +13,14 @@ typedef double float64_t;
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 #include <filesystem>
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/imgutils.h>
+#include <libavutil/avutil.h>
+#include <libswscale/swscale.h>
+#include <libavutil/timestamp.h>
+}
 
 struct VideoAnalysisTouch
 {
@@ -48,7 +56,7 @@ extern "C" {
     VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id);
     EXPORT void js_memcpy(void* dest, void* source, size_t size);
     EXPORT void train_nn();
-    EXPORT StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder);
+    EXPORT StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder);
 }
 
 int32_t add(int32_t a, int32_t b) {
@@ -91,7 +99,9 @@ const OverlayConfig OVERLAY_STANDARD_1 = {
     .red = {.x = (float)228 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
     .green = {.x = (float)1063 / 1920, .y = (float)980 / 1080, .width = (float)608 / 1920, .height = (float)32 / 1080 },
     .red_score = {.x = (float)792 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 },
-    .green_score = {.x = (float)1060 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 }
+    .green_score = {.x = (float)1060 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 },
+    .red_name = {.x = (float)338 / 1829, .y = (float)882 / 1031, .width = (float)410 / 1829, .height = (float)56 / 1031 },
+    .green_name = {.x = (float)1100 / 1829, .y = (float)882 / 1031, .width = (float)410 / 1829, .height = (float)56 / 1031 },
 };
 
 const OverlayConfig OVERLAY_STANDARD_2 = {
@@ -236,7 +246,7 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
     {
         int contentCount = (thresholded.rows * thresholded.cols) - cv::countNonZero(thresholded);
         over_10 = contentCount > (overlay.threshold * thresholded.rows * thresholded.cols);
-        std::cout << "Content count: " << contentCount << ", threshold: " << (overlay.threshold * thresholded.rows * thresholded.cols) << std::endl;
+        // std::cout << "Content count: " << contentCount << ", threshold: " << (overlay.threshold * thresholded.rows * thresholded.cols) << std::endl;
     }
 
     // imshow("tracker", thresholded);
@@ -505,7 +515,197 @@ std::string formatString(const std::string& input) {
     return result;
 }
 
-StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder)
+#pragma warning(disable: 4576)
+
+static void log_packet(const AVFormatContext* fmt_ctx, const AVPacket* pkt, const char* tag)
+{
+    AVRational* time_base = &fmt_ctx->streams[pkt->stream_index]->time_base;
+
+    printf("%s: pts:%s pts_time:%s dts:%s dts_time:%s duration:%s duration_time:%s stream_index:%d\n",
+        tag,
+        av_ts2str(pkt->pts), av_ts2timestr(pkt->pts, time_base),
+        av_ts2str(pkt->dts), av_ts2timestr(pkt->dts, time_base),
+        av_ts2str(pkt->duration), av_ts2timestr(pkt->duration, time_base),
+        pkt->stream_index);
+}
+
+
+/**
+ * @brief Print the information of the passed packet.
+ *
+ * @fn logPacket
+ * @param avFormatContext AVFormatContext of the given packet.
+ * @param avPacket AVPacket to log.
+ * @param tag String to tag the log output.
+ */
+void logPacket(const AVFormatContext* avFormatContext, const AVPacket* avPacket, const std::string& tag) {
+    return;
+    AVRational* timeBase = &avFormatContext->streams[avPacket->stream_index]->time_base;
+
+    std::cout << tag << ": pts:" << av_ts2str(avPacket->pts)
+        << " pts_time:" << av_ts2timestr(avPacket->pts, timeBase)
+        << " dts:" << av_ts2str(avPacket->dts)
+        << " dts_time:" << av_ts2timestr(avPacket->dts, timeBase)
+        << " duration:" << av_ts2str(avPacket->duration)
+        << " duration_time:" << av_ts2timestr(avPacket->duration, timeBase)
+        << " stream_index:" << avPacket->stream_index << std::endl;
+}
+
+/**
+ * @brief Cut a file in the given input file path based on the start and end seconds, and output the cutted file to the
+ * given output file path.
+ *
+ * @fn cut_file
+ * @param inputFilePath Input file path to be cutted.
+ * @param startSeconds Cutting start time in seconds.
+ * @param endSeconds Cutting end time in seconds.
+ * @param outputFilePath Output file path to write the new cutted file.
+ *
+ * @details This function will take an input file path and cut it based on the given start and end seconds. The cutted
+ * file will then be outputted to the given output file path.
+ *
+ * @return True if the cutting operation finished successfully, false otherwise.
+ */
+bool cut_file(const std::string& inputFilePath, const long long& startSeconds, const long long& endSeconds,
+    const std::string& outputFilePath) {
+    int operationResult;
+
+    AVPacket* avPacket = NULL;
+    AVFormatContext* avInputFormatContext = NULL;
+    AVFormatContext* avOutputFormatContext = NULL;
+
+    avPacket = av_packet_alloc();
+    if (!avPacket) {
+        std::cerr << "Failed to allocate AVPacket." << std::endl;
+        return false;
+    }
+
+    try {
+        operationResult = avformat_open_input(&avInputFormatContext, inputFilePath.c_str(), 0, 0);
+        if (operationResult < 0) {
+            throw std::runtime_error("Failed to open the input file.");
+        }
+
+        operationResult = avformat_find_stream_info(avInputFormatContext, 0);
+        if (operationResult < 0) {
+            throw std::runtime_error("Failed to retrieve the input stream information.");
+        }
+
+        avformat_alloc_output_context2(&avOutputFormatContext, NULL, NULL, outputFilePath.c_str());
+        if (!avOutputFormatContext) {
+            operationResult = AVERROR_UNKNOWN;
+            throw std::runtime_error("Failed to create the output context.");
+        }
+
+        int streamIndex = 0;
+        int* streamMapping = new int[avInputFormatContext->nb_streams];
+        int* streamRescaledStartSeconds = new int[avInputFormatContext->nb_streams];
+        int* streamRescaledEndSeconds = new int[avInputFormatContext->nb_streams];
+
+        // Copy streams from the input file to the output file.
+        for (int i = 0; i < avInputFormatContext->nb_streams; i++) {
+            AVStream* outStream;
+            AVStream* inStream = avInputFormatContext->streams[i];
+
+            streamRescaledStartSeconds[i] = av_rescale_q(startSeconds * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
+            streamRescaledEndSeconds[i] = av_rescale_q(endSeconds * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
+
+            if (inStream->codecpar->codec_type != AVMEDIA_TYPE_AUDIO &&
+                inStream->codecpar->codec_type != AVMEDIA_TYPE_VIDEO &&
+                inStream->codecpar->codec_type != AVMEDIA_TYPE_SUBTITLE) {
+                streamMapping[i] = -1;
+                continue;
+            }
+
+            streamMapping[i] = streamIndex++;
+
+            outStream = avformat_new_stream(avOutputFormatContext, NULL);
+            if (!outStream) {
+                operationResult = AVERROR_UNKNOWN;
+                throw std::runtime_error("Failed to allocate the output stream.");
+            }
+
+            operationResult = avcodec_parameters_copy(outStream->codecpar, inStream->codecpar);
+            if (operationResult < 0) {
+                throw std::runtime_error("Failed to copy codec parameters from input stream to output stream.");
+            }
+            outStream->codecpar->codec_tag = 0;
+        }
+
+        if (!(avOutputFormatContext->oformat->flags & AVFMT_NOFILE)) {
+            operationResult = avio_open(&avOutputFormatContext->pb, outputFilePath.c_str(), AVIO_FLAG_WRITE);
+            if (operationResult < 0) {
+                throw std::runtime_error("Failed to open the output file.");
+            }
+        }
+
+        operationResult = avformat_write_header(avOutputFormatContext, NULL);
+        if (operationResult < 0) {
+            throw std::runtime_error("Error occurred when opening output file.");
+        }
+
+        operationResult = avformat_seek_file(avInputFormatContext, -1, INT64_MIN, startSeconds * AV_TIME_BASE,
+            startSeconds * AV_TIME_BASE, 0);
+        if (operationResult < 0) {
+            throw std::runtime_error("Failed to seek the input file to the targeted start position.");
+        }
+
+        while (true) {
+            operationResult = av_read_frame(avInputFormatContext, avPacket);
+            if (operationResult < 0) break;
+
+            // Skip packets from unknown streams and packets after the end cut position.
+            if (avPacket->stream_index >= avInputFormatContext->nb_streams || streamMapping[avPacket->stream_index] < 0 ||
+                avPacket->pts > streamRescaledEndSeconds[avPacket->stream_index]) {
+                av_packet_unref(avPacket);
+                continue;
+            }
+
+            avPacket->stream_index = streamMapping[avPacket->stream_index];
+            logPacket(avInputFormatContext, avPacket, "in");
+
+            // Shift the packet to its new position by subtracting the rescaled start seconds.
+            avPacket->pts -= streamRescaledStartSeconds[avPacket->stream_index];
+            avPacket->dts -= streamRescaledStartSeconds[avPacket->stream_index];
+
+            av_packet_rescale_ts(avPacket, avInputFormatContext->streams[avPacket->stream_index]->time_base,
+                avOutputFormatContext->streams[avPacket->stream_index]->time_base);
+            avPacket->pos = -1;
+            logPacket(avOutputFormatContext, avPacket, "out");
+
+            operationResult = av_interleaved_write_frame(avOutputFormatContext, avPacket);
+            if (operationResult < 0) {
+                throw std::runtime_error("Failed to mux the packet.");
+            }
+        }
+
+        delete[] streamMapping;
+        delete[] streamRescaledStartSeconds;
+        delete[] streamRescaledEndSeconds;
+
+        av_write_trailer(avOutputFormatContext);
+    }
+    catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+    }
+
+    av_packet_free(&avPacket);
+
+    avformat_close_input(&avInputFormatContext);
+
+    if (avOutputFormatContext && !(avOutputFormatContext->oformat->flags & AVFMT_NOFILE))
+        avio_closep(&avOutputFormatContext->pb);
+    avformat_free_context(avOutputFormatContext);
+
+    if (operationResult < 0 && operationResult != AVERROR_EOF) {
+        char buffer[64] = {};
+        std::cerr << "Error occurred: " << av_make_error_string(buffer, 64, operationResult) << std::endl;
+        return false;
+    }
+
+    return true;
+}
+StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder)
 {
     StreamAnalysis* analysis = new StreamAnalysis();
 
@@ -587,19 +787,19 @@ StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, 
 
                 cv::Mat redName = frame(redNameRoi);
                 cv::cvtColor(redName, redName, cv::COLOR_BGR2GRAY);
-                // tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step); // Feed binary image to Tesseract
-                // std::string red_str = tess.GetUTF8Text(); // Extract text
-                // red_str = formatString(red_str);
+                tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step); // Feed binary image to Tesseract
+                std::string red_str = tess.GetUTF8Text(); // Extract text
+                red_str = formatString(red_str);
 
                 cv::Mat greenName = frame(greenNameRoi);
                 cv::cvtColor(greenName, greenName, cv::COLOR_BGR2GRAY);
-                // tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step); // Feed binary image to Tesseract
-                // std::string green_str = tess.GetUTF8Text(); // Extract text
-                // green_str = formatString(green_str);
-                // std::cout << "Red name: " << red_str << ", green name: " << green_str << std::endl;
+                tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step); // Feed binary image to Tesseract
+                std::string green_str = tess.GetUTF8Text(); // Extract text
+                green_str = formatString(green_str);
+                std::cout << "Red name: " << red_str << ", green name: " << green_str << std::endl;
 
-                // analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
-                // analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
+                analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
+                analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
             }
             if (bout_running && !score_nonzero)
             {
@@ -624,16 +824,15 @@ StreamAnalysis* cut_stream(const char* ffmpeg_path, const char* tesseract_path, 
         {
             for (int i = 0; i < analysis->bout_count; i++)
             {
-                cap.set(cv::CAP_PROP_POS_FRAMES, i);
                 StreamBoutSegment bout = analysis->bouts[i];
                 double start = bout.start_frame / fps;
                 double end = bout.end_frame / fps;
                 std::string bout_name = std::string("/") + bout.name_left + std::string(" vs ") + bout.name_right + ".mp4";
-                std::cout << "Start: " << start << ", end: " << end << ", duration: " << end - start << std::endl;
-                std::string command = std::string(ffmpeg_path) + " -loglevel quiet -ss " + std::to_string(start) + " -i \"" +
-                    std::string(video_path) + "\" -t " + std::to_string(end - start) +
-                    " -c copy -y \"" + std::string(output_folder) + bout_name + "\"";
-                std::system(command.c_str());
+                std::cout << "Start: " << start << ", End: " << end << ", Duration: " << end - start << std::endl;
+                const char* video_name = (std::string(output_folder) + bout_name).c_str();
+                std::cout << "Input: " << video_path << " Output: " << video_name << std::endl;
+                // extract_video_segment(video_path, std::string(output_folder) + bout_name, start, end - start);
+                cut_file(video_path, start, end, std::string(output_folder) + bout_name);
             }
         }
     }

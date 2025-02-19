@@ -30,10 +30,10 @@ base class StreamAnalysis extends Struct {
   external Array<StreamBoutSegment> bouts;
 }
 
-typedef CutStreamC = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
-    Pointer<Utf8>, Pointer<Utf8>, Uint8, Pointer<Utf8>);
-typedef CutStreamDart = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
-    Pointer<Utf8>, Pointer<Utf8>, int, Pointer<Utf8>);
+typedef CutStreamC = Pointer<Void> Function(
+    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Uint8, Pointer<Utf8>);
+typedef CutStreamDart = Pointer<Void> Function(
+    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, int, Pointer<Utf8>);
 
 class NativeLibrary {
   late final DynamicLibrary _lib;
@@ -45,7 +45,7 @@ class NativeLibrary {
         ? DynamicLibrary.open(
             '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/libvideo_review.dylib')
         : DynamicLibrary.open(
-            '${Directory(Platform.resolvedExecutable).parent.path}\\data\\flutter_assets\\assets\\video_review.dll');
+            '${Directory(Platform.resolvedExecutable).parent.path}\\video_review.dll');
   }
 
   late final CutStreamDart cutStream =

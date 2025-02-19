@@ -16,6 +16,16 @@ add_executable(${BINARY_NAME} WIN32
   "runner.exe.manifest"
 )
 
+# Copy additional files to the executable directory
+set(EXECUTABLE_PATH "$<TARGET_FILE_DIR:${BINARY_NAME}>")
+
+# Add files to be copied
+add_custom_command(TARGET ${BINARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/runner/resources/dlls
+        ${EXECUTABLE_PATH}
+)
+
 # Apply the standard set of build settings. This can be removed for applications
 # that need different build settings.
 apply_standard_settings(${BINARY_NAME})
