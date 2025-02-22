@@ -32,6 +32,8 @@ class _MainAppState extends State<MainApp> {
   bool showOutputPath = false;
 
   bool converting = false;
+  int convertingProgress = 0;
+  bool saving = false;
   String? errorStr;
 
   int selectedOverlay = 0;
@@ -81,9 +83,12 @@ class _MainAppState extends State<MainApp> {
   }
 
   void selectOutputFolder() async {
-    final result = await FilePicker.platform.getDirectoryPath(
-        dialogTitle: "Select output folder",
-        initialDirectory: await getDefaultOutputFolder());
+    final result = Platform.isMacOS
+        ? await FilePicker.platform.getDirectoryPath(
+            dialogTitle: "Select output folder",
+            initialDirectory: await getDefaultOutputFolder())
+        : await FilePicker.platform
+            .getDirectoryPath(dialogTitle: "Select output folder");
     if (result != null) {
       final filePath = result;
       print('Selected output folder: $filePath');
@@ -107,59 +112,32 @@ class _MainAppState extends State<MainApp> {
     }
   }
 
-  void clipStream() {
-    if (selectedFile == null || outputFolder == null) return;
-
-    try {
-      final receivePort = ReceivePort();
-      Isolate.spawn(clipStreamImpl, receivePort.sendPort);
-
-      // receivePort.listen((message) {
-      //   _messengerKey.currentState!.showSnackBar(
-      //     SnackBar(content: Text(message)),
-      //   );
-      //   receivePort.close();
-      // });
-    } catch (e, stackTrace) {
-      print('Error: $e\n$stackTrace');
-    }
+  void myCallback(int result) {
+    print("C++ returned: $result");
+    setState(() {
+      if (result == -2) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Stream successfully clipped!')),
+        );
+        converting = false;
+        saving = false;
+      } else if (result == -1) {
+        converting = false;
+        saving = true;
+      } else {
+        convertingProgress = result;
+      }
+    });
   }
 
-  void clipStreamImpl(SendPort sendPort) {
-    try {
-      if (selectedFile == null || outputFolder == null) return;
-      final ffi = NativeLibrary();
-      final svmModelPtr = (Platform.isMacOS
-              ? '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'
-              : '${Directory(Platform.resolvedExecutable).path}/flutter_assets/assets/svm_model.xml')
-          .toNativeUtf8();
-      final tesseractPtr =
-          '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/'
-              .toNativeUtf8();
-      final selectedFilePtr = selectedFile!.toNativeUtf8();
-      final outputFolderPtr = outputFolder!.toNativeUtf8();
+  Future<int> clipStream() async {
+    if (converting || saving) return 0;
 
-      print(
-          "Selected: $selectedOverlay, id: ${overlays[selectedOverlay]["id"]}");
-      final resultPtr = ffi.cutStream(tesseractPtr, svmModelPtr,
-          selectedFilePtr, overlays[selectedOverlay]["id"], outputFolderPtr);
+    converting = true;
 
-      malloc.free(selectedFilePtr);
-      malloc.free(outputFolderPtr);
+    final nativeCallback = NativeCallable<CallbackFunc>.listener(myCallback);
 
-      sendPort.send(resultPtr != nullptr
-          ? 'Stream successfully clipped!'
-          : 'Stream analysis failed');
-    } catch (e) {
-      sendPort.send("Error: $e");
-    }
-  }
-
-  void clipStream2() {
     final ffi = NativeLibrary();
-    // final ffmpegPtr =
-    //     '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/ffmpeg'
-    //         .toNativeUtf8();
     final svmModelPtr = (Platform.isMacOS
             ? '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'
             : '${Directory(Platform.resolvedExecutable).parent.path}/data/flutter_assets/assets/svm_model.xml')
@@ -170,18 +148,20 @@ class _MainAppState extends State<MainApp> {
     final selectedFilePtr = selectedFile!.toNativeUtf8();
     final outputFolderPtr = outputFolder!.toNativeUtf8();
 
-    final resultPtr = ffi.cutStream(tessdataPtr, svmModelPtr, selectedFilePtr,
-        overlays[selectedOverlay]["id"], outputFolderPtr);
+    final resultPtr = ffi.cutStream(
+        tessdataPtr,
+        svmModelPtr,
+        selectedFilePtr,
+        overlays[selectedOverlay]["id"],
+        outputFolderPtr,
+        nativeCallback.nativeFunction);
 
     malloc.free(selectedFilePtr);
     malloc.free(outputFolderPtr);
+    malloc.free(svmModelPtr);
+    malloc.free(tessdataPtr);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text(resultPtr != nullptr
-              ? 'Stream successfully clipped!'
-              : 'Stream analysis failed')),
-    );
+    return 0;
   }
 
   void selectOverlay() async {
@@ -301,7 +281,7 @@ class _MainAppState extends State<MainApp> {
               SizedBox(height: 8),
               if (showOutputPath) ...[
                 Text(
-                  'Folder: ${outputFolderIsDefault ? "Default folder" : outputFolder == null ? "No folder selected" : outputFolder!.length > 40 ? outputFolder!.substring(0, 40) + '...' : outputFolder}',
+                  'Folder: ${outputFolder}',
                   style: TextStyle(fontSize: 14),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -321,7 +301,7 @@ class _MainAppState extends State<MainApp> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: clipStream2,
+                onPressed: clipStream,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -329,7 +309,13 @@ class _MainAppState extends State<MainApp> {
                   ),
                 ),
                 child: Text("Clip Stream!"),
-              )
+              ),
+              SizedBox(height: 16),
+              if (converting) ...[
+                LinearProgressIndicator(
+                    value: convertingProgress.toDouble() / 100.0)
+              ],
+              if (saving) ...[Text("Saving to disk...")]
             ]),
           ),
         ));

@@ -56,7 +56,8 @@ extern "C" {
     VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id);
     EXPORT void js_memcpy(void* dest, void* source, size_t size);
     EXPORT void train_nn();
-    EXPORT StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder);
+    // EXPORT StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int));
+    EXPORT void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int));
 }
 
 int32_t add(int32_t a, int32_t b) {
@@ -267,7 +268,7 @@ cv::Rect roiFromVideoInfo(int width, int height, VideoROI roi)
     return cv::Rect(width * roi.x, height * roi.y, width * roi.width, height * roi.height);
 }
 
-cv::Ptr<cv::ml::SVM> preload_digit_model(const char* svm_path)
+cv::Ptr<cv::ml::SVM> preload_digit_model(const std::string& svm_path)
 {
     std::filesystem::path exe_path = std::filesystem::current_path();
     std::cout << "[DIGIT MODEL] Looking for svm model at " << svm_path << std::endl;
@@ -705,14 +706,20 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
 
     return true;
 }
-StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder)
+extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const std::string& svm_path, const std::string& video_path, uint8_t overlay_id, const std::string& output_folder, void (*callback)(int))
 {
+    std::cout << "Tesseract path: " << tesseract_path <<
+        "\nSVM path: " << svm_path <<
+        "\nVideo path: " << video_path <<
+        "\nOverlay ID: " << (int)overlay_id <<
+        "\nOutput folder: " << output_folder << std::endl;
+
     StreamAnalysis* analysis = new StreamAnalysis();
 
     cv::Ptr<cv::ml::SVM> svm = preload_digit_model(svm_path);
 
     tesseract::TessBaseAPI tess;
-    if (tess.Init(tesseract_path, "eng", tesseract::OEM_LSTM_ONLY)) // Initialize Tesseract with English language
+    if (tess.Init(tesseract_path.c_str(), "eng", tesseract::OEM_LSTM_ONLY)) // Initialize Tesseract with English language
     {
         std::cerr << "Could not initialize Tesseract." << std::endl;
         return analysis;
@@ -728,13 +735,18 @@ StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, con
     {
         cv::VideoCapture cap(video_path, cv::CAP_FFMPEG);
         cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_ANY);
-        if (!cap.isOpened()) return 0;
+        if (!cap.isOpened())
+        {
+            std::cout << "Failed to open video from " << video_path << std::endl;
+            return analysis;
+        }
 
         double fps = cap.get(cv::CAP_PROP_FPS);
         int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
         int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
         int frame_count = cap.get(cv::CAP_PROP_FRAME_COUNT);
         OverlayConfig overlay = OVERLAYS[overlay_id];
+        std::cout << "D" << std::endl;
 
         analysis->fps = fps;
         analysis->frame_count = frame_count;
@@ -782,6 +794,7 @@ StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, con
             if (!bout_running && score_nonzero)
             {
                 std::cout << "Bout started at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%)!" << std::endl;
+                callback(i * 100 / frame_count);
                 bout_running = true;
                 analysis->bouts[analysis->bout_count].start_frame = i - skip_rate * 4;
 
@@ -820,20 +833,18 @@ StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, con
             analysis->bout_count += 1;
         }
 
-        if (output_folder != NULL)
+        callback(-1);
+        for (int i = 0; i < analysis->bout_count; i++)
         {
-            for (int i = 0; i < analysis->bout_count; i++)
-            {
-                StreamBoutSegment bout = analysis->bouts[i];
-                double start = bout.start_frame / fps;
-                double end = bout.end_frame / fps;
-                std::string bout_name = std::string("/") + bout.name_left + std::string(" vs ") + bout.name_right + ".mp4";
-                std::cout << "Start: " << start << ", End: " << end << ", Duration: " << end - start << std::endl;
-                const char* video_name = (std::string(output_folder) + bout_name).c_str();
-                std::cout << "Input: " << video_path << " Output: " << video_name << std::endl;
-                // extract_video_segment(video_path, std::string(output_folder) + bout_name, start, end - start);
-                cut_file(video_path, start, end, std::string(output_folder) + bout_name);
-            }
+            StreamBoutSegment bout = analysis->bouts[i];
+            double start = bout.start_frame / fps;
+            double end = bout.end_frame / fps;
+            std::string bout_name = std::string("/") + bout.name_left + std::string(" vs ") + bout.name_right + ".mp4";
+            std::cout << "Start: " << start << ", End: " << end << ", Duration: " << end - start << std::endl;
+            const char* video_name = (std::string(output_folder) + bout_name).c_str();
+            std::cout << "Input: " << video_path << " Output: " << video_name << std::endl;
+            // extract_video_segment(video_path, std::string(output_folder) + bout_name, start, end - start);
+            cut_file(video_path, start, end, std::string(output_folder) + bout_name);
         }
     }
     catch (const std::exception& e)
@@ -841,4 +852,27 @@ StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, con
         std::cerr << "Caught exception: " << e.what() << std::endl;
     }
     return analysis;
+}
+
+#include <windows.h>
+
+void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int)) {
+    std::string tesseract_str(tesseract_path);
+    std::string svm_str(svm_path);
+    std::string video_path_str(video_path);
+    std::string output_folder_str(output_folder);
+
+    std::thread([tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, callback]() {
+        try {
+
+            cut_stream(tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, callback);
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Exception: " << e.what() << std::endl;
+        }
+
+        // Call callback with result
+        if (callback) callback(-2);
+        }).detach(); // Detach thread to run independently
 }

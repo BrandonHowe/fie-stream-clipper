@@ -30,10 +30,13 @@ base class StreamAnalysis extends Struct {
   external Array<StreamBoutSegment> bouts;
 }
 
-typedef CutStreamC = Pointer<Void> Function(
-    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, Uint8, Pointer<Utf8>);
-typedef CutStreamDart = Pointer<Void> Function(
-    Pointer<Utf8>, Pointer<Utf8>, Pointer<Utf8>, int, Pointer<Utf8>);
+typedef CallbackFunc = Void Function(Int32);
+typedef DartCallback = void Function(int);
+
+typedef CutStreamC = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
+    Pointer<Utf8>, Uint8, Pointer<Utf8>, Pointer<NativeFunction<CallbackFunc>>);
+typedef CutStreamDart = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
+    Pointer<Utf8>, int, Pointer<Utf8>, Pointer<NativeFunction<CallbackFunc>>);
 
 class NativeLibrary {
   late final DynamicLibrary _lib;
@@ -49,5 +52,5 @@ class NativeLibrary {
   }
 
   late final CutStreamDart cutStream =
-      _lib.lookup<NativeFunction<CutStreamC>>('cut_stream').asFunction();
+      _lib.lookup<NativeFunction<CutStreamC>>('cut_stream_async').asFunction();
 }
