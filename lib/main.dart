@@ -113,19 +113,21 @@ class _MainAppState extends State<MainApp> {
   }
 
   void myCallback(int result) {
-    print("C++ returned: $result");
     setState(() {
-      if (result == -2) {
+      if (result == 255) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Stream successfully clipped!')),
         );
         converting = false;
         saving = false;
-      } else if (result == -1) {
-        converting = false;
+      } else if (result < 0) {
+        converting = true;
+        convertingProgress = -result;
         saving = true;
       } else {
+        converting = true;
         convertingProgress = result;
+        saving = false;
       }
     });
   }
@@ -312,10 +314,24 @@ class _MainAppState extends State<MainApp> {
               ),
               SizedBox(height: 16),
               if (converting) ...[
-                LinearProgressIndicator(
-                    value: convertingProgress.toDouble() / 100.0)
+                Text(saving ? "Saving to disk..." : "Analyzing video...",
+                    style: TextStyle(fontSize: 18))
               ],
-              if (saving) ...[Text("Saving to disk...")]
+              SizedBox(height: 8),
+              if (converting) ...[
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 500),
+                    child: TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      tween: Tween<double>(
+                        begin: 0,
+                        end: convertingProgress.toDouble() / 100,
+                      ),
+                      builder: (context, value, _) =>
+                          LinearProgressIndicator(value: value),
+                    ))
+              ]
             ]),
           ),
         ));

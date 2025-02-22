@@ -22,6 +22,24 @@ extern "C" {
 #include <libavutil/timestamp.h>
 }
 
+const char* COUNTRY_CODES =
+"AFG\nALB\nALG\nAND\nANG\nANT\nARG\nARM\nARU\nASA\nAUS\nAUT\nAZE\n"
+"BAH\nBAN\nBAR\nBDI\nBEL\nBEN\nBER\nBHU\nBIH\nBIZ\nBLR\nBOL\nBOT\n"
+"BRN\nBRU\nBUL\nBUR\nCAF\nCAM\nCAN\nCAY\nCGO\nCHA\nCHI\nCHN\nCIV\n"
+"CMR\nCOD\nCOK\nCOL\nCOM\nCPV\nCRC\nCRO\nCUB\nCYP\nCZE\nDEN\nDJI\n"
+"DMA\nDOM\nECU\nEGY\nERI\nESA\nESP\nEST\nETH\nFIJ\nFIN\nFRA\nFSM\n"
+"GAB\nGAM\nGBR\nGBS\nGEO\nGEQ\nGER\nGHA\nGRE\nGRN\nGUA\nGUI\nGUM\n"
+"GUY\nHAI\nHKG\nHON\nHUN\nINA\nIND\nIRI\nIRL\nIRQ\nISL\nISR\nISV\n"
+"ITA\nIVB\nJAM\nJOR\nJPN\nKAZ\nKEN\nKGZ\nKIR\nKOR\nKSA\nKUW\nLAO\n"
+"LAT\nLBA\nLBR\nLCA\nLES\nLIB\nLIE\nLTU\nLUX\nMAD\nMAR\nMAS\nMAW\n"
+"MDA\nMDV\nMEX\nMGL\nMHL\nMKD\nMLI\nMLT\nMNE\nMON\nMOZ\nMRI\nMTN\n"
+"MYA\nNAM\nNCA\nNED\nNEP\nNGR\nNIG\nNOR\nNRU\nNZL\nOMA\nPAK\nPAN\n"
+"PAR\nPER\nPHI\nPLE\nPLW\nPNG\nPOL\nPOR\nPRK\nPUR\nQAT\nROU\nRSA\n"
+"RUS\nRWA\nSAM\nSEN\nSEY\nSIN\nSKN\nSLE\nSLO\nSMR\nSOL\nSOM\nSRB\n"
+"SRI\nSTP\nSUD\nSUI\nSUR\nSVK\nSWE\nSWZ\nSYR\nTAN\nTGA\nTHA\nTJK\n"
+"TKM\nTLS\nTOG\nTPE\nTRI\nTUN\nTUR\nTUV\nUAE\nUGA\nUKR\nURU\nUSA\n"
+"UZB\nVAN\nVEN\nVIE\nVIN\nYEM\nZAM\nZIM\n";
+
 struct VideoAnalysisTouch
 {
     uint32_t frame;
@@ -41,6 +59,9 @@ struct StreamBoutSegment
     int32_t end_frame;
     const char* name_left;
     const char* name_right;
+    const char* country_left;
+    const char* country_right;
+    const char* tableau;
 };
 
 struct StreamAnalysis
@@ -86,6 +107,10 @@ struct OverlayConfig {
     VideoROI green_score;
     VideoROI red_name;
     VideoROI green_name;
+    VideoROI red_country;
+    VideoROI green_country;
+    VideoROI time;
+    VideoROI tableau;
 };
 
 std::ostream& operator<<(std::ostream& os, const OverlayConfig& obj) {
@@ -103,6 +128,9 @@ const OverlayConfig OVERLAY_STANDARD_1 = {
     .green_score = {.x = (float)1060 / 1920, .y = (float)927 / 1080, .width = (float)64 / 1920, .height = (float)48 / 1080 },
     .red_name = {.x = (float)338 / 1829, .y = (float)882 / 1031, .width = (float)410 / 1829, .height = (float)56 / 1031 },
     .green_name = {.x = (float)1100 / 1829, .y = (float)882 / 1031, .width = (float)410 / 1829, .height = (float)56 / 1031 },
+    .red_country = {.x = (float)250 / 1829, .y = (float)891 / 1031, .width = (float)96 / 1829, .height = (float)36 / 1031 },
+    .green_country = {.x = (float)1492 / 1829, .y = (float)891 / 1031, .width = (float)96 / 1829, .height = (float)36 / 1031 },
+    .time = {.x = (float)869 / 1829, .y = (float)888 / 1031, .width = (float)108 / 1829, .height = (float)44 / 1031 }
 };
 
 const OverlayConfig OVERLAY_STANDARD_2 = {
@@ -114,7 +142,11 @@ const OverlayConfig OVERLAY_STANDARD_2 = {
     .red_score = {.x = (float)517 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
     .green_score = {.x = (float)718 / 1280, .y = (float)612 / 720, .width = (float)40 / 1280, .height = (float)32 / 720 },
     .red_name = {.x = (float)128 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 },
-    .green_name = {.x = (float)374 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 }
+    .green_name = {.x = (float)374 / 640, .y = (float)305 / 360, .width = (float)140 / 640, .height = (float)20 / 360 },
+    .red_country = {.x = (float)212 / 1829, .y = (float)896 / 1031, .width = (float)64 / 1829, .height = (float)24 / 1031 },
+    .green_country = {.x = (float)1562 / 1829, .y = (float)896 / 1031, .width = (float)64 / 1829, .height = (float)24 / 1031 },
+    .time = {.x = (float)860 / 1829, .y = (float)886 / 1031, .width = (float)108 / 1829, .height = (float)30 / 1031 },
+    .tableau = {.x = (float)860 / 1829, .y = (float)938 / 1031, .width = (float)108 / 1829, .height = (float)36 / 1031 },
 };
 
 const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2 };
@@ -467,50 +499,33 @@ void js_memcpy(void* dest, void* source, size_t size) {
     memcpy(dest, source, size);
 }
 
-std::string formatString(const std::string& input) {
+std::string formatString(const std::string& input, bool numeric_allowed, bool uppercase = false) {
     size_t start = 0, end = input.size();
 
     // Trim from both ends
-    while (start < end && !std::isalpha(input[start])) ++start;
-    while (end > start && !std::isalpha(input[end - 1])) --end;
+    while (start < end && !(numeric_allowed ? std::isalnum(input[start]) : std::isalpha(input[start]))) ++start;
+    while (end > start && !(numeric_allowed ? std::isalnum(input[end - 1]) : std::isalpha(input[end - 1]))) --end;
 
-    if (start >= end) return ""; // Empty result if no valid characters
+    if (start >= end) return "";
 
-    // Allocate result string
     std::string result;
     result.reserve(end - start);
 
-    // Normalize spaces and split into words
-    std::vector<std::string> words;
-    std::string currentWord;
     bool capitalize = true;
-
     for (size_t i = start; i < end; ++i) {
         if (std::isspace(input[i])) {
-            if (!currentWord.empty()) {
-                words.push_back(currentWord);
-                currentWord.clear();
-            }
+            if (!result.empty() && result.back() != ' ') result.push_back(' ');
             capitalize = true;
         }
         else {
-            currentWord.push_back(capitalize ? std::toupper(input[i]) : std::tolower(input[i]));
+            if (uppercase) {
+                result.push_back(std::toupper(input[i]));
+            }
+            else {
+                result.push_back(capitalize ? std::toupper(input[i]) : std::tolower(input[i]));
+            }
             capitalize = false;
         }
-    }
-    if (!currentWord.empty()) {
-        words.push_back(currentWord);
-    }
-
-    // If there's at least one word, rotate the first to the end
-    if (!words.empty()) {
-        std::rotate(words.begin(), words.begin() + 1, words.end());
-    }
-
-    // Reconstruct the result
-    for (const auto& word : words) {
-        if (!result.empty()) result.push_back(' ');
-        result.append(word);
     }
 
     return result;
@@ -568,7 +583,7 @@ void logPacket(const AVFormatContext* avFormatContext, const AVPacket* avPacket,
  * @return True if the cutting operation finished successfully, false otherwise.
  */
 bool cut_file(const std::string& inputFilePath, const long long& startSeconds, const long long& endSeconds,
-    const std::string& outputFilePath) {
+    const std::string& outputFilePath, const int framesToSkip) {
     int operationResult;
 
     AVPacket* avPacket = NULL;
@@ -608,7 +623,7 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
             AVStream* outStream;
             AVStream* inStream = avInputFormatContext->streams[i];
 
-            streamRescaledStartSeconds[i] = av_rescale_q(startSeconds * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
+            streamRescaledStartSeconds[i] = av_rescale_q((startSeconds + framesToSkip) * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
             streamRescaledEndSeconds[i] = av_rescale_q(endSeconds * AV_TIME_BASE, AV_TIME_BASE_Q, inStream->time_base);
 
             if (inStream->codecpar->codec_type != AVMEDIA_TYPE_AUDIO &&
@@ -645,12 +660,16 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
             throw std::runtime_error("Error occurred when opening output file.");
         }
 
-        operationResult = avformat_seek_file(avInputFormatContext, -1, INT64_MIN, startSeconds * AV_TIME_BASE,
-            startSeconds * AV_TIME_BASE, 0);
+        // operationResult = avformat_seek_file(avInputFormatContext, -1, INT64_MIN, startSeconds * AV_TIME_BASE,
+        //     startSeconds * AV_TIME_BASE, 0);
+        av_seek_frame(avInputFormatContext, -1, startSeconds * AV_TIME_BASE, AVSEEK_FLAG_BACKWARD);
+
         if (operationResult < 0) {
             throw std::runtime_error("Failed to seek the input file to the targeted start position.");
         }
 
+        bool foundKeyframe = false;
+        int skippedFrames = 0;
         while (true) {
             operationResult = av_read_frame(avInputFormatContext, avPacket);
             if (operationResult < 0) break;
@@ -660,6 +679,14 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
                 avPacket->pts > streamRescaledEndSeconds[avPacket->stream_index]) {
                 av_packet_unref(avPacket);
                 continue;
+            }
+
+            if (avInputFormatContext->streams[avPacket->stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                if (skippedFrames < framesToSkip) {
+                    skippedFrames++;
+                    av_packet_unref(avPacket);
+                    continue;  // Skip this frame
+                }
             }
 
             avPacket->stream_index = streamMapping[avPacket->stream_index];
@@ -706,6 +733,7 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
 
     return true;
 }
+
 extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const std::string& svm_path, const std::string& video_path, uint8_t overlay_id, const std::string& output_folder, void (*callback)(int))
 {
     std::cout << "Tesseract path: " << tesseract_path <<
@@ -724,12 +752,13 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         std::cerr << "Could not initialize Tesseract." << std::endl;
         return analysis;
     }
-    tess.SetPageSegMode(tesseract::PSM_SINGLE_LINE);    // Set Page Segmentation Mode
 
     // How many seconds to skip at a time while waiting for a bout
     const int SKIP_SECONDS = 15;
     // Minimum length of bout (to prevent fluctuations in score)
     const int MIN_BOUT_SECONDS = 60;
+
+    tess.SetVariable("user_words_suffix", COUNTRY_CODES);
 
     try
     {
@@ -746,7 +775,6 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
         int frame_count = cap.get(cv::CAP_PROP_FRAME_COUNT);
         OverlayConfig overlay = OVERLAYS[overlay_id];
-        std::cout << "D" << std::endl;
 
         analysis->fps = fps;
         analysis->frame_count = frame_count;
@@ -763,6 +791,10 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         cv::Rect greenScoreRoi = roiFromVideoInfo(width, height, overlay.green_score);
         cv::Rect redNameRoi = roiFromVideoInfo(width, height, overlay.red_name);
         cv::Rect greenNameRoi = roiFromVideoInfo(width, height, overlay.green_name);
+        cv::Rect redCountryRoi = roiFromVideoInfo(width, height, overlay.red_country);
+        cv::Rect greenCountryRoi = roiFromVideoInfo(width, height, overlay.green_country);
+        cv::Rect timeRoi = roiFromVideoInfo(width, height, overlay.time);
+        cv::Rect tableauRoi = roiFromVideoInfo(width, height, overlay.tableau);
 
         cv::Mat frame;
 
@@ -772,6 +804,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         int frames_to_skip = 0;
 
         bool bout_running = false;
+        callback(1);
         for (int i = 0; i < frame_count; i++)
         {
             if (frames_to_skip > 0)
@@ -793,26 +826,82 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
 
             if (!bout_running && score_nonzero)
             {
-                std::cout << "Bout started at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%)!" << std::endl;
+                tess.SetPageSegMode(tesseract::PSM_SINGLE_LINE);
                 callback(i * 100 / frame_count);
                 bout_running = true;
                 analysis->bouts[analysis->bout_count].start_frame = i - skip_rate * 4;
 
-                cv::Mat redName = frame(redNameRoi);
-                cv::cvtColor(redName, redName, cv::COLOR_BGR2GRAY);
-                tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step); // Feed binary image to Tesseract
-                std::string red_str = tess.GetUTF8Text(); // Extract text
-                red_str = formatString(red_str);
+                for (int rewind_amount = 0; rewind_amount < 100; rewind_amount++)
+                {
+                    cv::Mat local_frame;
+                    cap.set(cv::CAP_PROP_POS_FRAMES, i - rewind_amount * skip_rate);
+                    cap.read(local_frame);
 
-                cv::Mat greenName = frame(greenNameRoi);
-                cv::cvtColor(greenName, greenName, cv::COLOR_BGR2GRAY);
-                tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step); // Feed binary image to Tesseract
-                std::string green_str = tess.GetUTF8Text(); // Extract text
-                green_str = formatString(green_str);
-                std::cout << "Red name: " << red_str << ", green name: " << green_str << std::endl;
+                    cv::Mat timeMat = local_frame(timeRoi);
+                    cv::cvtColor(timeMat, timeMat, cv::COLOR_BGR2GRAY);
+                    tess.SetImage(timeMat.data, timeMat.cols, timeMat.rows, 1, timeMat.step); // Feed binary image to Tesseract
+                    std::string time_str = tess.GetUTF8Text();
+                    if (time_str.length() == 0 || time_str[0] == '3')
+                    {
+                        analysis->bouts[analysis->bout_count].start_frame = i - rewind_amount * skip_rate;
+                        break;
+                    }
+                }
+                cap.set(cv::CAP_PROP_POS_FRAMES, i);
+                std::cout << "Bout started at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%)!" << std::endl;
 
-                analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
-                analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
+                {
+                    cv::Mat redName = frame(redNameRoi);
+                    cv::cvtColor(redName, redName, cv::COLOR_BGR2GRAY);
+                    tess.SetImage(redName.data, redName.cols, redName.rows, 1, redName.step);
+                    std::string red_str = tess.GetUTF8Text();
+                    red_str = formatString(red_str, false);
+
+                    cv::Mat greenName = frame(greenNameRoi);
+                    cv::cvtColor(greenName, greenName, cv::COLOR_BGR2GRAY);
+                    tess.SetImage(greenName.data, greenName.cols, greenName.rows, 1, greenName.step);
+                    std::string green_str = tess.GetUTF8Text();
+                    green_str = formatString(green_str, false);
+
+                    if (tableauRoi.area() > 1)
+                    {
+                        cv::Mat tableau = frame(tableauRoi);
+                        cv::cvtColor(tableau, tableau, cv::COLOR_BGR2GRAY);
+                        tess.SetImage(tableau.data, tableau.cols, tableau.rows, 1, tableau.step);
+                        std::string tableau_str = tess.GetUTF8Text();
+                        tableau_str = formatString(tableau_str, true);
+                        analysis->bouts[analysis->bout_count].tableau = strdup(tableau_str.c_str());
+                        std::cout << "Tableau: " << tableau_str << ", ";
+                    }
+                    else
+                    {
+                        analysis->bouts[analysis->bout_count].tableau = nullptr;
+                    }
+
+                    tess.SetVariable("lang_model_penalty_non_dict_word", "0");
+                    tess.SetPageSegMode(tesseract::PSM_SINGLE_WORD);
+
+                    cv::Mat redCountry = frame(redCountryRoi);
+                    cv::cvtColor(redCountry, redCountry, cv::COLOR_BGR2GRAY);
+                    tess.SetImage(redCountry.data, redCountry.cols, redCountry.rows, 1, redCountry.step);
+                    std::string red_country = tess.GetUTF8Text();
+                    red_country = formatString(red_country, false, true);
+
+                    cv::Mat greenCountry = frame(greenCountryRoi);
+                    cv::cvtColor(greenCountry, greenCountry, cv::COLOR_BGR2GRAY);
+                    tess.SetImage(greenCountry.data, greenCountry.cols, greenCountry.rows, 1, greenCountry.step);
+                    std::string green_country = tess.GetUTF8Text();
+                    green_country = formatString(green_country, false, true);
+
+                    std::cout << "Red name: " << red_str << " (" << red_country << "), Green name: " << green_str << " (" << green_country << ")" << std::endl;
+
+                    analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
+                    analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
+                    analysis->bouts[analysis->bout_count].country_left = red_country.length() > 0 ? strdup(red_country.c_str()) : nullptr;
+                    analysis->bouts[analysis->bout_count].country_right = green_country.length() > 0 ? strdup(green_country.c_str()) : nullptr;
+
+                    tess.SetVariable("lang_model_penalty_non_dict_word", "0.5");
+                }
             }
             if (bout_running && !score_nonzero)
             {
@@ -839,12 +928,17 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             StreamBoutSegment bout = analysis->bouts[i];
             double start = bout.start_frame / fps;
             double end = bout.end_frame / fps;
-            std::string bout_name = std::string("/") + bout.name_left + std::string(" vs ") + bout.name_right + ".mp4";
+            std::string fencer_name_section = std::string("/") + bout.name_left;
+            if (bout.country_left != nullptr) fencer_name_section += std::string(" ") + bout.country_left;
+            fencer_name_section += std::string(" vs ") + bout.name_right;
+            if (bout.country_right != nullptr) fencer_name_section += std::string(" ") + bout.country_right;
+            if (bout.tableau != nullptr) fencer_name_section += std::string(" ") + bout.tableau;
+            std::string bout_name = fencer_name_section + ".mp4";
             std::cout << "Start: " << start << ", End: " << end << ", Duration: " << end - start << std::endl;
             const char* video_name = (std::string(output_folder) + bout_name).c_str();
             std::cout << "Input: " << video_path << " Output: " << video_name << std::endl;
-            // extract_video_segment(video_path, std::string(output_folder) + bout_name, start, end - start);
-            cut_file(video_path, start, end, std::string(output_folder) + bout_name);
+            cut_file(video_path, start - 2 * skip_rate, end, std::string(output_folder) + bout_name, 2 * skip_rate);
+            callback(-(i + 1) * 100 / analysis->bout_count);
         }
     }
     catch (const std::exception& e)
@@ -873,6 +967,6 @@ void cut_stream_async(const char* tesseract_path, const char* svm_path, const ch
         }
 
         // Call callback with result
-        if (callback) callback(-2);
+        if (callback) callback(255);
         }).detach(); // Detach thread to run independently
 }
