@@ -149,7 +149,20 @@ const OverlayConfig OVERLAY_STANDARD_2 = {
     .tableau = {.x = (float)860 / 1829, .y = (float)938 / 1031, .width = (float)108 / 1829, .height = (float)36 / 1031 },
 };
 
-const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2 };
+const OverlayConfig OVERLAY_USA_STANDARD = {
+    .id = 2,
+    .threshold = 0.135,
+    .symmetric_threshold = true,
+    .red = {.x = (float)0 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
+    .green = {.x = (float)1200 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
+    .red_score = {.x = (float)624 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
+    .green_score = {.x = (float)1100 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
+    .red_name = {.x = (float)0 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
+    .green_name = {.x = (float)1200 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
+    .time = {.x = (float)867 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)48 / 1030 },
+};
+
+const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2, OVERLAY_USA_STANDARD };
 
 void train_nn()
 {
@@ -263,6 +276,10 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
     {
         cv::threshold(gray, thresholded, 110, 255, cv::THRESH_BINARY);
     }
+    else if (overlay.id == 2)
+    {
+        cv::threshold(gray, thresholded, 110, 255, cv::THRESH_BINARY_INV);
+    }
 
     cv::Mat left_mat = thresholded(cv::Rect(0, 0, thresholded.cols / 2, thresholded.rows));
     cv::Mat right_mat = thresholded(cv::Rect(thresholded.cols / 2, 0, thresholded.cols / 2, thresholded.rows));
@@ -273,7 +290,8 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
     {
         int left_content = (left_mat.rows * left_mat.cols) - cv::countNonZero(left_mat);
         int right_content = (right_mat.rows * right_mat.cols) - cv::countNonZero(right_mat);
-        over_10 = left_content > 10 && right_content > 10;
+        int threshold = overlay.threshold * thresholded.rows * thresholded.cols;
+        over_10 = left_content > threshold && right_content > threshold;
     }
     else
     {
@@ -872,24 +890,44 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
                     tess.SetVariable("lang_model_penalty_non_dict_word", "0");
                     tess.SetPageSegMode(tesseract::PSM_SINGLE_WORD);
 
-                    cv::Mat redCountry = frame(redCountryRoi);
-                    cv::cvtColor(redCountry, redCountry, cv::COLOR_BGR2GRAY);
-                    tess.SetImage(redCountry.data, redCountry.cols, redCountry.rows, 1, redCountry.step);
-                    std::string red_country = tess.GetUTF8Text();
-                    red_country = formatString(red_country, false, true);
+                    std::cout << "Red name: " << red_str;
 
-                    cv::Mat greenCountry = frame(greenCountryRoi);
-                    cv::cvtColor(greenCountry, greenCountry, cv::COLOR_BGR2GRAY);
-                    tess.SetImage(greenCountry.data, greenCountry.cols, greenCountry.rows, 1, greenCountry.step);
-                    std::string green_country = tess.GetUTF8Text();
-                    green_country = formatString(green_country, false, true);
+                    if (redCountryRoi.area() > 1)
+                    {
+                        cv::Mat redCountry = frame(redCountryRoi);
+                        cv::cvtColor(redCountry, redCountry, cv::COLOR_BGR2GRAY);
+                        tess.SetImage(redCountry.data, redCountry.cols, redCountry.rows, 1, redCountry.step);
+                        std::string red_country = tess.GetUTF8Text();
+                        red_country = formatString(red_country, false, true);
+                        analysis->bouts[analysis->bout_count].country_left = red_country.length() > 0 ? strdup(red_country.c_str()) : nullptr;
+                        std::cout << " (" << red_country << "),";
+                    }
+                    else
+                    {
+                        analysis->bouts[analysis->bout_count].country_left = nullptr;
+                    }
 
-                    std::cout << "Red name: " << red_str << " (" << red_country << "), Green name: " << green_str << " (" << green_country << ")" << std::endl;
+                    std::cout << "Green name: " << green_str;
+
+                    if (greenCountryRoi.area() > 1)
+                    {
+                        cv::Mat greenCountry = frame(greenCountryRoi);
+                        cv::cvtColor(greenCountry, greenCountry, cv::COLOR_BGR2GRAY);
+                        tess.SetImage(greenCountry.data, greenCountry.cols, greenCountry.rows, 1, greenCountry.step);
+                        std::string green_country = tess.GetUTF8Text();
+                        green_country = formatString(green_country, false, true);
+                        analysis->bouts[analysis->bout_count].country_right = green_country.length() > 0 ? strdup(green_country.c_str()) : nullptr;
+                        std::cout << " (" << green_country << ")";
+                    }
+                    else
+                    {
+                        analysis->bouts[analysis->bout_count].country_right = nullptr;
+                    }
+
+                    std::cout << std::endl;
 
                     analysis->bouts[analysis->bout_count].name_left = strdup(red_str.c_str());
                     analysis->bouts[analysis->bout_count].name_right = strdup(green_str.c_str());
-                    analysis->bouts[analysis->bout_count].country_left = red_country.length() > 0 ? strdup(red_country.c_str()) : nullptr;
-                    analysis->bouts[analysis->bout_count].country_right = green_country.length() > 0 ? strdup(green_country.c_str()) : nullptr;
 
                     tess.SetVariable("lang_model_penalty_non_dict_word", "0.5");
                 }

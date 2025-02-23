@@ -40,6 +40,11 @@ class _MainAppState extends State<MainApp> {
   final List<Map<String, dynamic>> overlays = [
     {'label': 'Standard 1', 'image': 'assets/overlays/standard.png', 'id': 1},
     {'label': 'Standard 2', 'image': 'assets/overlays/standard2.png', 'id': 0},
+    {
+      'label': 'USA Standard',
+      'image': 'assets/overlays/usa_standard.png',
+      'id': 2
+    },
   ];
 
   final TextEditingController _controller = TextEditingController();
