@@ -42,6 +42,8 @@ class _MainAppState extends State<MainApp> {
     {'label': 'Standard 2', 'image': 'assets/overlays/standard2.png', 'id': 0},
   ];
 
+  final TextEditingController _controller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -149,6 +151,7 @@ class _MainAppState extends State<MainApp> {
             .toNativeUtf8();
     final selectedFilePtr = selectedFile!.toNativeUtf8();
     final outputFolderPtr = outputFolder!.toNativeUtf8();
+    final eventNamePtr = _controller.text.trim().toNativeUtf8();
 
     final resultPtr = ffi.cutStream(
         tessdataPtr,
@@ -156,6 +159,7 @@ class _MainAppState extends State<MainApp> {
         selectedFilePtr,
         overlays[selectedOverlay]["id"],
         outputFolderPtr,
+        eventNamePtr,
         nativeCallback.nativeFunction);
 
     malloc.free(selectedFilePtr);
@@ -301,6 +305,20 @@ class _MainAppState extends State<MainApp> {
                   ),
                 ),
               ),
+              SizedBox(height: 16),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text("Event name"),
+                SizedBox(width: 16),
+                SizedBox(
+                    width: 200,
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        labelText: 'Leave blank if none',
+                        // border: OutlineInputBorder(),
+                      ),
+                    )),
+              ]),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: clipStream,

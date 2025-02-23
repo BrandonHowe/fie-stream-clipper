@@ -33,10 +33,22 @@ base class StreamAnalysis extends Struct {
 typedef CallbackFunc = Void Function(Int32);
 typedef DartCallback = void Function(int);
 
-typedef CutStreamC = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
-    Pointer<Utf8>, Uint8, Pointer<Utf8>, Pointer<NativeFunction<CallbackFunc>>);
-typedef CutStreamDart = Pointer<Void> Function(Pointer<Utf8>, Pointer<Utf8>,
-    Pointer<Utf8>, int, Pointer<Utf8>, Pointer<NativeFunction<CallbackFunc>>);
+typedef CutStreamC = Pointer<Void> Function(
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Uint8,
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Pointer<NativeFunction<CallbackFunc>>);
+typedef CutStreamDart = Pointer<Void> Function(
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    int,
+    Pointer<Utf8>,
+    Pointer<Utf8>,
+    Pointer<NativeFunction<CallbackFunc>>);
 
 class NativeLibrary {
   late final DynamicLibrary _lib;

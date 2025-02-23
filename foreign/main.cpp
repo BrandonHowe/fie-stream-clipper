@@ -78,7 +78,7 @@ extern "C" {
     EXPORT void js_memcpy(void* dest, void* source, size_t size);
     EXPORT void train_nn();
     // EXPORT StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int));
-    EXPORT void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int));
+    EXPORT void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, const char* event_name, void (*callback)(int));
 }
 
 int32_t add(int32_t a, int32_t b) {
@@ -669,7 +669,6 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
         }
 
         bool foundKeyframe = false;
-        int skippedFrames = 0;
         while (true) {
             operationResult = av_read_frame(avInputFormatContext, avPacket);
             if (operationResult < 0) break;
@@ -679,14 +678,6 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
                 avPacket->pts > streamRescaledEndSeconds[avPacket->stream_index]) {
                 av_packet_unref(avPacket);
                 continue;
-            }
-
-            if (avInputFormatContext->streams[avPacket->stream_index]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-                if (skippedFrames < framesToSkip) {
-                    skippedFrames++;
-                    av_packet_unref(avPacket);
-                    continue;  // Skip this frame
-                }
             }
 
             avPacket->stream_index = streamMapping[avPacket->stream_index];
@@ -734,7 +725,7 @@ bool cut_file(const std::string& inputFilePath, const long long& startSeconds, c
     return true;
 }
 
-extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const std::string& svm_path, const std::string& video_path, uint8_t overlay_id, const std::string& output_folder, void (*callback)(int))
+extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const std::string& svm_path, const std::string& video_path, uint8_t overlay_id, const std::string& output_folder, const std::string& event_name, void (*callback)(int))
 {
     std::cout << "Tesseract path: " << tesseract_path <<
         "\nSVM path: " << svm_path <<
@@ -928,7 +919,9 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             StreamBoutSegment bout = analysis->bouts[i];
             double start = bout.start_frame / fps;
             double end = bout.end_frame / fps;
-            std::string fencer_name_section = std::string("/") + bout.name_left;
+            std::string fencer_name_section = std::string("/");
+            if (event_name.length() > 0) fencer_name_section += event_name + std::string(" ");
+            fencer_name_section += bout.name_left;
             if (bout.country_left != nullptr) fencer_name_section += std::string(" ") + bout.country_left;
             fencer_name_section += std::string(" vs ") + bout.name_right;
             if (bout.country_right != nullptr) fencer_name_section += std::string(" ") + bout.country_right;
@@ -937,7 +930,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             std::cout << "Start: " << start << ", End: " << end << ", Duration: " << end - start << std::endl;
             const char* video_name = (std::string(output_folder) + bout_name).c_str();
             std::cout << "Input: " << video_path << " Output: " << video_name << std::endl;
-            cut_file(video_path, start - 2 * skip_rate, end, std::string(output_folder) + bout_name, 2 * skip_rate);
+            cut_file(video_path, start, end, std::string(output_folder) + bout_name, 0);
             callback(-(i + 1) * 100 / analysis->bout_count);
         }
     }
@@ -950,16 +943,17 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
 
 #include <windows.h>
 
-void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int)) {
+void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, const char* event_name, void (*callback)(int)) {
     std::string tesseract_str(tesseract_path);
     std::string svm_str(svm_path);
     std::string video_path_str(video_path);
     std::string output_folder_str(output_folder);
+    std::string event_name_str(event_name);
 
-    std::thread([tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, callback]() {
+    std::thread([tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, event_name_str, callback]() {
         try {
 
-            cut_stream(tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, callback);
+            cut_stream(tesseract_str, svm_str, video_path_str, overlay_id, output_folder_str, event_name_str, callback);
         }
         catch (const std::exception& e)
         {
