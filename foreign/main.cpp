@@ -164,7 +164,7 @@ const OverlayConfig OVERLAY_USA_STANDARD = {
 
 const OverlayConfig OVERLAY_TURKEY = {
     .id = 3,
-    .threshold = 0.135,
+    .threshold = 0.085,
     .symmetric_threshold = true,
     .red = {.x = (float)1446 / 1835, .y = (float)108 / 1030, .width = (float)50 / 1835, .height = (float)30 / 1030 },
     .green = {.x = (float)1678 / 1835, .y = (float)108 / 1030, .width = (float)50 / 1835, .height = (float)30 / 1030 },
@@ -259,7 +259,26 @@ int classify_digit(const cv::Ptr<cv::ml::SVM>& svm, const cv::Mat& region)
     int x_offset = (64 - width) / 2;
     int y_offset = (64 - height) / 2;
 
-    resized.copyTo(centeredMat(cv::Rect(x_offset, y_offset, width, height)));
+    if (x_offset < 0)
+    {
+        width -= x_offset;
+        x_offset = 0;
+    }
+    if (y_offset < 0)
+    {
+        height -= boundingRect.y;
+        y_offset = 0;
+    }
+    if (width > 64) width = 64;
+    if (height > 64) height = 64;
+
+    try {
+        resized.copyTo(centeredMat(cv::Rect(x_offset, y_offset, width, height)));
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error in digit classification: " << e.what() << std::endl;
+        return -1;
+    }
 
     // Flatten the image (reshape from 64x64 to 1D vector)
     cv::Mat flatImg = centeredMat.reshape(1, 1); // Flatten to 1D vector
@@ -267,13 +286,14 @@ int classify_digit(const cv::Ptr<cv::ml::SVM>& svm, const cv::Mat& region)
     // Convert the image to CV_32F (float) as the SVM expects this type
     flatImg.convertTo(flatImg, CV_32F);
 
+
     // Use the SVM to predict the digit
     float predictedLabel = svm->predict(flatImg);
 
     return predictedLabel;
 }
 
-uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, OverlayConfig overlay)
+int8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, OverlayConfig overlay)
 {
     // Convert image to gray
     cv::Mat gray;
@@ -293,6 +313,10 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
     {
         cv::threshold(gray, thresholded, 110, 255, cv::THRESH_BINARY_INV);
     }
+    else if (overlay.id == 3)
+    {
+        cv::threshold(gray, thresholded, 130, 255, cv::THRESH_BINARY_INV);
+    }
 
     cv::Mat left_mat = thresholded(cv::Rect(0, 0, thresholded.cols / 2, thresholded.rows));
     cv::Mat right_mat = thresholded(cv::Rect(thresholded.cols / 2, 0, thresholded.cols / 2, thresholded.rows));
@@ -301,10 +325,36 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
 
     if (overlay.symmetric_threshold)
     {
-        int left_content = (left_mat.rows * left_mat.cols) - cv::countNonZero(left_mat);
-        int right_content = (right_mat.rows * right_mat.cols) - cv::countNonZero(right_mat);
-        int threshold = overlay.threshold * thresholded.rows * thresholded.cols;
-        over_10 = left_content > threshold && right_content > threshold;
+        if (overlay.id == 3 || true) {
+            std::vector<int> colSums(thresholded.cols, 0);
+
+            for (int x = 0; x < thresholded.cols; x++) { // Compute column-wise black pixel count
+                colSums[x] = thresholded.rows - cv::countNonZero(thresholded.col(x)); // Count black pixels
+            }
+
+            double meanX = 0, totalWeight = 0; // Compute mean column position (center of mass)
+            for (int x = 0; x < thresholded.cols; x++) {
+                meanX += x * colSums[x];
+                totalWeight += colSums[x];
+            }
+            meanX /= (totalWeight + 1e-5); // Avoid division by zero
+
+            double spread = 0; // Compute spread: sum of absolute deviations from center
+            for (int x = 0; x < thresholded.cols; x++) {
+                spread += std::abs(x - meanX) * colSums[x];
+            }
+            spread /= (totalWeight + 1e-5);
+
+            over_10 = spread > 0.1 * thresholded.cols;
+        }
+        else
+        {
+            int left_content = (left_mat.rows * left_mat.cols) - cv::countNonZero(left_mat);
+            int right_content = (right_mat.rows * right_mat.cols) - cv::countNonZero(right_mat);
+            int threshold = (overlay.threshold * thresholded.rows * thresholded.cols);
+            over_10 = left_content > threshold && right_content > threshold;
+            // std::cout << "Left: " << left_content << ", Right: " << right_content << ", Threshold: " << threshold << std::endl;
+        }
     }
     else
     {
@@ -318,7 +368,10 @@ uint8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, Overlay
 
     if (over_10)
     {
-        return 10 + classify_digit(svm, right_mat);
+        int left_digit = classify_digit(svm, left_mat);
+        int right_digit = classify_digit(svm, right_mat);
+        if (left_digit == -1 || right_digit == -1) return -1;
+        return left_digit * 10 + right_digit;
     }
     else
     {
@@ -840,11 +893,15 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
 
             cv::Mat redScoreMask = frame(redScoreRoi);
             cv::Mat greenScoreMask = frame(greenScoreRoi);
-            uint8_t redScore = classify_score(svm, redScoreMask, overlay);
-            uint8_t greenScore = classify_score(svm, greenScoreMask, overlay);
+            int8_t redScore = classify_score(svm, redScoreMask, overlay);
+            int8_t greenScore = classify_score(svm, greenScoreMask, overlay);
+            if (redScore < 0 || greenScore < 0)
+            {
+                continue;
+            }
             bool score_nonzero = redScore > 0 || greenScore > 0;
 
-            // std::cout << "Score at frame " << i << " (" << i / fps << "s, "  << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
+            // std::cout << "Score at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
 
             if (!bout_running && score_nonzero)
             {

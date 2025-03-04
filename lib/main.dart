@@ -213,7 +213,7 @@ class _MainAppState extends State<MainApp> {
         appBar: AppBar(title: Text('Stream Clipper')),
         bottomNavigationBar: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text("Version 0.1.0 (2/22/2025)", textAlign: TextAlign.center),
+          child: Text("Version 0.2.1 (3/4/2025)", textAlign: TextAlign.center),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
