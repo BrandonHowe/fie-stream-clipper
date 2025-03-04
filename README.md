@@ -2,6 +2,8 @@
 
 This program takes a several hours long livestream of an FIE event with an overlay and automatically cuts it up into smaller videos, one per bout. Each bout is labeled with the fencers' names and optionally the current tableau, fencers' countries, and event name/date e.g. "Orleans GP 2024 Torre Pietro ITA vs Homer Daryl USA T32". Although the name is FIE Stream Clipper, this program also works for USA Fencing livestreams, including NACs and NCAA championships.
 
+![fie_stream_clipper_img](https://github.com/user-attachments/assets/226f2516-f8c6-4055-9bba-d23a723dda3b)
+
 ## Installation
 
 Installing the program is quite straightforward. Use the following steps to run the executable on your Windows computer:
