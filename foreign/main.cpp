@@ -162,7 +162,20 @@ const OverlayConfig OVERLAY_USA_STANDARD = {
     .time = {.x = (float)867 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)48 / 1030 },
 };
 
-const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2, OVERLAY_USA_STANDARD };
+const OverlayConfig OVERLAY_TURKEY = {
+    .id = 3,
+    .threshold = 0.135,
+    .symmetric_threshold = true,
+    .red = {.x = (float)1446 / 1835, .y = (float)108 / 1030, .width = (float)50 / 1835, .height = (float)30 / 1030 },
+    .green = {.x = (float)1678 / 1835, .y = (float)108 / 1030, .width = (float)50 / 1835, .height = (float)30 / 1030 },
+    .red_score = {.x = (float)1475 / 1835, .y = (float)146 / 1030, .width = (float)48 / 1835, .height = (float)32 / 1030 },
+    .green_score = {.x = (float)1653 / 1835, .y = (float)146 / 1030, .width = (float)48 / 1835, .height = (float)32 / 1030 },
+    .red_name = {.x = (float)1335 / 1835, .y = (float)8 / 1030, .width = (float)250 / 1835, .height = (float)32 / 1030 },
+    .green_name = {.x = (float)1585 / 1835, .y = (float)8 / 1030, .width = (float)250 / 1835, .height = (float)32 / 1030 },
+    .time = {.x = (float)1538 / 1830, .y = (float)60 / 1030, .width = (float)100 / 1830, .height = (float)40 / 1030 },
+};
+
+const OverlayConfig OVERLAYS[] = { OVERLAY_STANDARD_1, OVERLAY_STANDARD_2, OVERLAY_USA_STANDARD, OVERLAY_TURKEY };
 
 void train_nn()
 {
