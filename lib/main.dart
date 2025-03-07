@@ -1,6 +1,5 @@
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:ffi/ffi.dart';
@@ -162,7 +161,7 @@ class _MainAppState extends State<MainApp> {
     final outputFolderPtr = outputFolder!.toNativeUtf8();
     final eventNamePtr = _controller.text.trim().toNativeUtf8();
 
-    final resultPtr = ffi.cutStream(
+    ffi.cutStream(
         tessdataPtr,
         svmModelPtr,
         selectedFilePtr,
@@ -220,11 +219,23 @@ class _MainAppState extends State<MainApp> {
         ),
         body: DropTarget(
             onDragDone: (detail) {
-              const videoExtensions = {'.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv', '.wmv', '.mpeg', '.3gp'};
-              if(!videoExtensions.any((ext) => detail.files[0].path.toLowerCase().endsWith(ext))) {
+              const videoExtensions = {
+                '.mp4',
+                '.mov',
+                '.avi',
+                '.mkv',
+                '.webm',
+                '.flv',
+                '.wmv',
+                '.mpeg',
+                '.3gp'
+              };
+              if (!videoExtensions.any(
+                  (ext) => detail.files[0].path.toLowerCase().endsWith(ext))) {
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: Dragged file was not a video.')),
+                  SnackBar(
+                      content: Text('Error: Dragged file was not a video.')),
                 );
               } else {
                 selectedFile = detail.files[0].path;

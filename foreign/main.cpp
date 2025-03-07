@@ -90,6 +90,14 @@ struct VideoROI {
     float y;
     float width;
     float height;
+
+    void fromRect(cv::Rect rect, float scaleX, float scaleY)
+    {
+        x = rect.x / scaleX;
+        y = rect.y / scaleY;
+        width = rect.width / scaleX;
+        height = rect.height / scaleY;
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, const VideoROI& obj) {
@@ -276,6 +284,7 @@ int classify_digit(const cv::Ptr<cv::ml::SVM>& svm, const cv::Mat& region)
         resized.copyTo(centeredMat(cv::Rect(x_offset, y_offset, width, height)));
     }
     catch (const std::exception& e) {
+        std::cout << "Trying to resize with rect " << cv::Rect(x_offset, y_offset, width, height) << std::endl;
         std::cerr << "Error in digit classification: " << e.what() << std::endl;
         return -1;
     }
@@ -315,7 +324,7 @@ int8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, OverlayC
     }
     else if (overlay.id == 3)
     {
-        cv::threshold(gray, thresholded, 130, 255, cv::THRESH_BINARY_INV);
+        cv::threshold(gray, thresholded, 135, 255, cv::THRESH_BINARY_INV);
     }
 
     cv::Mat left_mat = thresholded(cv::Rect(0, 0, thresholded.cols / 2, thresholded.rows));
@@ -399,184 +408,6 @@ cv::Ptr<cv::ml::SVM> preload_digit_model(const std::string& svm_path)
     cv::Ptr<cv::ml::SVM> svm = cv::ml::SVM::load(svm_path);
     std::cout << "[DIGIT MODEL] Model loaded successfully!" << std::endl;
     return svm;
-}
-
-VideoAnalysis* process(const char* video_path, OverlayConfig overlay)
-{
-    VideoAnalysis* analysis = new VideoAnalysis();
-
-    cv::Ptr<cv::ml::SVM> svm = preload_digit_model("./foreign/svm_model.xml");
-
-    int SKIP_RATE = 20;
-    int SCORE_CHECK_DELAY = 450;
-
-    cv::VideoCapture cap(video_path, cv::CAP_FFMPEG);
-    cap.set(cv::CAP_PROP_HW_ACCELERATION, cv::VIDEO_ACCELERATION_ANY);
-    if (!cap.isOpened()) return 0;
-
-    double fps = cap.get(cv::CAP_PROP_FPS);
-    int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
-    int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-    int frame_count = cap.get(cv::CAP_PROP_FRAME_COUNT);
-
-    std::cout << "Selected overlay: " << overlay << std::endl;
-
-    std::cout << "FPS: " << fps << "\n"
-        << "Width: " << width << "\n"
-        << "Height: " << height << "\n"
-        << "Total Frames: " << frame_count << std::endl;
-
-    cv::Rect redRoi = roiFromVideoInfo(width, height, overlay.red);
-    cv::Rect greenRoi = roiFromVideoInfo(width, height, overlay.green);
-    cv::Rect redScoreRoi = roiFromVideoInfo(width, height, overlay.red_score);
-    cv::Rect greenScoreRoi = roiFromVideoInfo(width, height, overlay.green_score);
-    cv::Mat frame;
-    cv::Ptr<cv::Tracker> tracker = cv::TrackerMIL::create();
-
-    cap >> frame;
-
-    while (redRoi.width == 0 || redRoi.height == 0)
-    {
-        // cv::rectangle(frame, redRoi, cv::Scalar(0, 255, 0), 2);
-        imshow("tracker", frame);
-        redRoi = selectROI("tracker", frame);
-        std::cout << "Red ROI: " << redRoi << std::endl;
-    }
-    while (greenRoi.width == 0 || greenRoi.height == 0)
-    {
-        greenRoi = selectROI("tracker", frame);
-        std::cout << "Green ROI: " << greenRoi << std::endl;
-    }
-    while (redScoreRoi.width == 0 || redScoreRoi.height == 0)
-    {
-        redScoreRoi = selectROI("tracker", frame);
-        std::cout << "Red score ROI: " << redScoreRoi << std::endl;
-    }
-    while (greenScoreRoi.width == 0 || greenScoreRoi.height == 0)
-    {
-        greenScoreRoi = selectROI("tracker", frame);
-        std::cout << "Green score ROI: " << greenScoreRoi << std::endl;
-    }
-
-    bool redOn = false;
-    bool greenOn = false;
-
-    int doubleTimeout = 0;
-    int frames_to_skip = SKIP_RATE;
-    bool should_check_score = false; // Should we check the score?
-    uint32_t delay_check_frame = -1; // Another frame far in the future just in case there was video on 14-14
-
-    uint8_t last_red = -1;
-    uint8_t last_green = -1;
-
-    for (int i = 1; i < frame_count; i++) {
-        int seconds = i / 30;
-        cap >> frame;
-        if (should_check_score || i == delay_check_frame)
-        {
-            if (i == delay_check_frame) std::cout << "Delay check at " << delay_check_frame << std::endl;
-            cv::Mat redScoreMask = frame(redScoreRoi);
-            cv::Mat greenScoreMask = frame(greenScoreRoi);
-
-            uint8_t redScore = classify_score(svm, redScoreMask, overlay);
-            uint8_t greenScore = classify_score(svm, greenScoreMask, overlay);
-            std::cout << "[ANALYSIS] Score at frame " << i << ": " << static_cast<int>(redScore) << "-" << static_cast<int>(greenScore) << std::endl;
-            // If the score is the same as before, the last touch must have been simul or annuled, so we overwrite
-            // if (redScore == last_red && greenScore == last_green)
-            // {
-            //     analysis->touch_count -= 1;
-            //     // If i is the delay check frame, it's not the actual time when it happened
-            //     if (should_check_score)
-            //     {
-            //         analysis->touches[analysis->touch_count].frame = i;
-            //     }
-            // }
-            // else
-            // {
-            analysis->touches[analysis->touch_count].frame = i;
-            // }
-            // Update last score accordingly
-            if (analysis->touch_count > 0)
-            {
-                analysis->touches[analysis->touch_count - 1].score1 = redScore;
-                analysis->touches[analysis->touch_count - 1].score2 = greenScore;
-            }
-            analysis->touch_count++;
-            last_red = redScore;
-            last_green = greenScore;
-            should_check_score = false;
-        }
-        if (frames_to_skip > 0)
-        {
-            frames_to_skip--;
-            continue;
-        }
-        cv::Mat hsvFrame;
-        cv::cvtColor(frame, hsvFrame, cv::COLOR_RGB2HSV);
-        cv::Mat redMat = hsvFrame(redRoi);
-        cv::Mat greenMat = hsvFrame(greenRoi);
-
-        cv::Mat redMask;
-        cv::inRange(redMat, cv::Scalar(120, 100, 160), cv::Scalar(140, 255, 255), redMask);
-        int redThreshold = redRoi.area() / 3;
-        int redPixels = cv::countNonZero(redMask);
-
-        if (i > 2900 && i < 3000) std::cout << "Red " << redPixels << ", threshold: " << redThreshold << std::endl;
-
-        if (redPixels >= redThreshold && !redOn)
-        {
-            std::cout << "Red light at " << i << std::endl;
-            should_check_score = true;
-            // delay_check_frame = MIN(i + SCORE_CHECK_DELAY, frame_count - 3);
-            redOn = true;
-        }
-        if (redPixels < redThreshold / 3 && redOn)
-        {
-            redOn = false;
-            doubleTimeout = i + 50;
-        }
-
-        cv::Mat greenMask;
-        cv::inRange(greenMat, cv::Scalar(50, 100, 160), cv::Scalar(70, 255, 255), greenMask);
-        int greenThreshold = redRoi.area() / 2;
-        int greenPixels = cv::countNonZero(greenMask);
-        // std::cout << "Green pixels: " << greenPixels << std::endl;
-        if (greenPixels > greenThreshold && !greenOn)
-        {
-            // std::cout << "Green light at " << i << std::endl;
-            should_check_score = true;
-            // delay_check_frame = MIN(i + SCORE_CHECK_DELAY, frame_count - 3);
-            greenOn = true;
-        }
-        if (greenPixels < greenThreshold / 2 && greenOn)
-        {
-            greenOn = false;
-            doubleTimeout = i + 50;
-        }
-
-        if (!redOn && !greenOn)
-        {
-            frames_to_skip = SKIP_RATE;
-        }
-    }
-
-    if (analysis->touch_count > 0) analysis->touch_count--;
-
-    return analysis;
-}
-
-VideoAnalysis* find_video_touches(const char* video_path, uint8_t overlay_id)
-{
-    try
-    {
-        auto result = process(video_path, OVERLAYS[overlay_id]);
-        return result;
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "Caught exception: " << e.what() << std::endl;
-    }
-    return 0;
 }
 
 void js_memcpy(void* dest, void* source, size_t size) {
@@ -851,6 +682,55 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         int frame_count = cap.get(cv::CAP_PROP_FRAME_COUNT);
         OverlayConfig overlay = OVERLAYS[overlay_id];
 
+        cv::Mat frame;
+
+        if (overlay_id == 3)
+        {
+            cap.read(frame);
+            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+            while (true) {
+                cv::Mat drawingFrame = frame.clone();
+
+                cv::Rect overlayRect = cv::selectROI("Select the overlay region", drawingFrame);
+                int x = overlayRect.x;
+                int y = 0;
+                int width = drawingFrame.cols - overlayRect.x - 1;
+                int height = overlayRect.y + overlayRect.height;
+
+                cv::Rect redNameRect(overlayRect.x, height * 0.02, width / 2, height * 0.2);
+                cv::Rect greenNameRect(overlayRect.x + width / 2, height * 0.02, width / 2, height * 0.2);
+                cv::rectangle(drawingFrame, redNameRect, cv::Scalar(0, 0, 255), 2);
+                cv::rectangle(drawingFrame, greenNameRect, cv::Scalar(0, 255, 0), 2);
+
+                cv::Rect timeRect(overlayRect.x + width * 0.4, height * 0.33, width * 0.2, height * 0.2);
+                cv::rectangle(drawingFrame, timeRect, cv::Scalar(255, 0, 0), 2);
+
+                cv::Rect redScoreRect(overlayRect.x + width * 0.275, height * 0.78, width * 0.1, height * 0.18);
+                cv::Rect greenScoreRect(overlayRect.x + width * 0.635, height * 0.78, width * 0.1, height * 0.18);
+                cv::rectangle(drawingFrame, redScoreRect, cv::Scalar(0, 0, 255), 2);
+                cv::rectangle(drawingFrame, greenScoreRect, cv::Scalar(0, 255, 0), 2);
+                imshow("Press BACKSPACE if the overlay does not line up, otherwise press ENTER", drawingFrame);
+                int key = cv::waitKey(5000);
+                std::cout << "Got key: " << key << std::endl;
+                if (key == 127 || key == 8) // Backspace
+                {
+                    cv::destroyWindow("Select the overlay region");
+                    cv::destroyWindow("Press BACKSPACE if the overlay does not line up, otherwise press ENTER");
+                    continue;
+                }
+
+                overlay.red_name.fromRect(redNameRect, frame.cols, frame.rows);
+                overlay.green_name.fromRect(greenNameRect, frame.cols, frame.rows);
+                overlay.time.fromRect(timeRect, frame.cols, frame.rows);
+                overlay.red_score.fromRect(redScoreRect, frame.cols, frame.rows);
+                overlay.green_score.fromRect(greenScoreRect, frame.cols, frame.rows);
+
+                cv::destroyWindow("Select the overlay region");
+                cv::destroyWindow("Press BACKSPACE if the overlay does not line up, otherwise press ENTER");
+                break;
+            }
+        }
+
         analysis->fps = fps;
         analysis->frame_count = frame_count;
 
@@ -870,8 +750,6 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
         cv::Rect greenCountryRoi = roiFromVideoInfo(width, height, overlay.green_country);
         cv::Rect timeRoi = roiFromVideoInfo(width, height, overlay.time);
         cv::Rect tableauRoi = roiFromVideoInfo(width, height, overlay.tableau);
-
-        cv::Mat frame;
 
         int skip_rate = SKIP_SECONDS * fps;
         int min_bout_length = MIN_BOUT_SECONDS * fps;
@@ -901,7 +779,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             }
             bool score_nonzero = redScore > 0 || greenScore > 0;
 
-            // std::cout << "Score at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
+            std::cout << "Score at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
 
             if (!bout_running && score_nonzero)
             {
@@ -915,6 +793,12 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
                     cv::Mat local_frame;
                     cap.set(cv::CAP_PROP_POS_FRAMES, i - rewind_amount * skip_rate);
                     cap.read(local_frame);
+
+                    cv::Mat redScoreMask = frame(redScoreRoi);
+                    cv::Mat greenScoreMask = frame(greenScoreRoi);
+                    int8_t redScore = classify_score(svm, redScoreMask, overlay);
+                    int8_t greenScore = classify_score(svm, greenScoreMask, overlay);
+                    if (redScore > 0 || greenScore > 0) continue;
 
                     cv::Mat timeMat = local_frame(timeRoi);
                     cv::cvtColor(timeMat, timeMat, cv::COLOR_BGR2GRAY);
@@ -1004,6 +888,20 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             }
             if (bout_running && !score_nonzero)
             {
+                // cv::Mat local_frame;
+                // cap.set(cv::CAP_PROP_POS_FRAMES, i + skip_rate);
+                // cap.read(local_frame);
+
+                // cv::Mat redScoreMask = local_frame(redScoreRoi);
+                // cv::Mat greenScoreMask = local_frame(greenScoreRoi);
+                // int8_t redScore = classify_score(svm, redScoreMask, overlay);
+                // int8_t greenScore = classify_score(svm, greenScoreMask, overlay);
+                // if (redScore > 0 || greenScore > 0)
+                // {
+                //     std::cout << "Score hit 0 at frame " << i << ", but score restored immediately after" << std::endl;
+                // }
+                // else
+                // {
                 std::cout << "Bout ended at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%)!" << std::endl;
                 bout_running = false;
                 if (i - analysis->bouts[analysis->bout_count].start_frame > min_bout_length)
@@ -1011,7 +909,9 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
                     analysis->bouts[analysis->bout_count].end_frame = i;
                     analysis->bout_count += 1;
                 }
+                // }
             }
+            // cap.set(cv::CAP_PROP_POS_FRAMES, i);
 
             frames_to_skip = skip_rate;
         }

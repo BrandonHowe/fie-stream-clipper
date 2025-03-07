@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:path/path.dart' as path;
 
 base class StreamBoutSegment extends Struct {
   @Int32()
