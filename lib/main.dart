@@ -28,9 +28,12 @@ class _MainAppState extends State<MainApp> {
   String? outputFolder;
   bool outputFolderIsDefault = true;
 
+  bool usingYoutubeInput = false;
+
   bool showStreamPath = false;
   bool showOutputPath = false;
 
+  bool downloading = false;
   bool converting = false;
   int convertingProgress = 0;
   bool saving = false;
@@ -51,6 +54,7 @@ class _MainAppState extends State<MainApp> {
   ];
 
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _youtubeURLController = TextEditingController();
 
   @override
   void initState() {
@@ -122,34 +126,79 @@ class _MainAppState extends State<MainApp> {
     }
   }
 
-  void myCallback(int result) {
+  void downloadYoutube() {
+    final ffi = NativeLibrary();
+
+    final String youtubePath =
+        "${Directory.current.path}/TEMP_SOURCE_VIDEO_YOUTUBE.mp4";
+    final Pointer<Utf8> selectedFilePtr = youtubePath.toNativeUtf8();
+
     setState(() {
-      if (result == 255) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Stream successfully clipped!')),
-        );
+      downloading = true;
+    });
+
+    final downloadStreamCallback =
+        NativeCallable<CallbackFuncStr>.listener((Pointer<Utf8> cstr) {
+      String message = cstr.toDartString();
+      setState(() {
+        downloading = false;
+      });
+      if (message != "Finished downloading YouTube video") {
         converting = false;
-        saving = false;
-      } else if (result < 0) {
-        converting = true;
-        convertingProgress = -result;
-        saving = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
       } else {
-        converting = true;
-        convertingProgress = result;
-        saving = false;
+        clipStream(selectedFilePtr);
       }
     });
+
+    final urlPtr = _youtubeURLController.text.trim().toNativeUtf8();
+    ffi.downloadYoutube(urlPtr, downloadStreamCallback.nativeFunction);
+
+    malloc.free(urlPtr);
   }
 
-  Future<int> clipStream() async {
-    if (converting || saving) return 0;
+  void clipStream(Pointer<Utf8>? selectedFilePtr) async {
+    if (converting || saving) return;
 
     converting = true;
 
-    final nativeCallback = NativeCallable<CallbackFunc>.listener(myCallback);
-
     final ffi = NativeLibrary();
+
+    final String youtubePath =
+        "${Directory.current.path}/TEMP_SOURCE_VIDEO_YOUTUBE.mp4";
+
+    if (!usingYoutubeInput) {
+      selectedFilePtr = selectedFile!.toNativeUtf8();
+    }
+
+    final nativeCallback = NativeCallable<CallbackFunc>.listener((int result) {
+      setState(() {
+        if (result == 255) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Stream successfully clipped!')),
+          );
+          converting = false;
+          saving = false;
+
+          if (usingYoutubeInput) {
+            if (File(youtubePath).existsSync()) {
+              File(youtubePath).deleteSync();
+            }
+          }
+        } else if (result < 0) {
+          converting = true;
+          convertingProgress = -result;
+          saving = true;
+        } else {
+          converting = true;
+          convertingProgress = result;
+          saving = false;
+        }
+      });
+    });
+
     final svmModelPtr = (Platform.isMacOS
             ? '${Directory(Platform.resolvedExecutable).parent.parent.path}/Resources/svm_model.xml'
             : '${Directory(Platform.resolvedExecutable).parent.path}/data/flutter_assets/assets/svm_model.xml')
@@ -157,14 +206,13 @@ class _MainAppState extends State<MainApp> {
     final tessdataPtr =
         '${Directory(Platform.resolvedExecutable).parent.path}/data/flutter_assets/assets/tessdata'
             .toNativeUtf8();
-    final selectedFilePtr = selectedFile!.toNativeUtf8();
     final outputFolderPtr = outputFolder!.toNativeUtf8();
     final eventNamePtr = _controller.text.trim().toNativeUtf8();
 
     ffi.cutStream(
         tessdataPtr,
         svmModelPtr,
-        selectedFilePtr,
+        selectedFilePtr!,
         overlays[selectedOverlay]["id"],
         outputFolderPtr,
         eventNamePtr,
@@ -174,8 +222,14 @@ class _MainAppState extends State<MainApp> {
     malloc.free(outputFolderPtr);
     malloc.free(svmModelPtr);
     malloc.free(tessdataPtr);
+  }
 
-    return 0;
+  void startClipping() {
+    if (usingYoutubeInput) {
+      downloadYoutube();
+    } else {
+      clipStream(Pointer<Utf8>.fromAddress(0));
+    }
   }
 
   void selectOverlay() async {
@@ -215,7 +269,7 @@ class _MainAppState extends State<MainApp> {
         appBar: AppBar(title: Text('FIE Stream Clipper')),
         bottomNavigationBar: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text("Version 0.2.2 (3/6/2025)", textAlign: TextAlign.center),
+          child: Text("Version 0.3.0 (3/16/2025)", textAlign: TextAlign.center),
         ),
         body: DropTarget(
             onDragDone: (detail) {
@@ -265,45 +319,84 @@ class _MainAppState extends State<MainApp> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          ToggleButtons(
+                            borderRadius: BorderRadius.circular(8),
+                            borderColor: Colors.grey,
+                            selectedBorderColor: Colors.blue,
+                            fillColor: Colors.blue.withOpacity(0.2),
+                            isSelected: [usingYoutubeInput, !usingYoutubeInput],
+                            onPressed: (index) =>
+                                setState(() => usingYoutubeInput = index == 0),
                             children: [
-                              ElevatedButton(
-                                onPressed: selectStreamFile,
-                                child: Text("Select Stream File"),
-                                style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 32, vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text("YouTube URL",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                               ),
-                              SizedBox(width: 6),
-                              Tooltip(
-                                message: "Show stream file path",
-                                child: IconButton(
-                                  icon: Icon(
-                                    showStreamPath
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    size: 20,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      showStreamPath = !showStreamPath;
-                                    });
-                                  },
-                                ),
-                              )
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text("Upload File",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
                             ],
                           ),
-                          if (showStreamPath) ...[
-                            SizedBox(height: 8),
-                            Text('File: ${selectedFile ?? "No file selected"}',
-                                style: TextStyle(fontSize: 14)),
-                          ],
                           SizedBox(height: 8),
+                          if (usingYoutubeInput) ...[
+                            SizedBox(
+                                width: 300,
+                                child: TextField(
+                                  controller: _youtubeURLController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Enter YouTube video URL...',
+                                    // border: OutlineInputBorder(),
+                                  ),
+                                )),
+                          ] else ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: selectStreamFile,
+                                  child: Text("Select Stream File"),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 32, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 6),
+                                Tooltip(
+                                  message: "Show stream file path",
+                                  child: IconButton(
+                                    icon: Icon(
+                                      showStreamPath
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      size: 20,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        showStreamPath = !showStreamPath;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                            if (showStreamPath) ...[
+                              SizedBox(height: 8),
+                              Text(
+                                  'File: ${selectedFile ?? "No file selected"}',
+                                  style: TextStyle(fontSize: 14)),
+                            ],
+                            SizedBox(height: 8),
+                            Text("You can also drag + drop a video file")
+                          ],
+                          SizedBox(height: 20),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -382,7 +475,7 @@ class _MainAppState extends State<MainApp> {
                               ]),
                           SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: clipStream,
+                            onPressed: startClipping,
                             style: ElevatedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 32, vertical: 12),
@@ -393,6 +486,11 @@ class _MainAppState extends State<MainApp> {
                             child: Text("Clip Stream!"),
                           ),
                           SizedBox(height: 16),
+                          if (downloading) ...[
+                            Text(
+                                "Downloading video (this could take a while...)",
+                                style: TextStyle(fontSize: 18))
+                          ],
                           if (converting) ...[
                             Text(
                                 saving

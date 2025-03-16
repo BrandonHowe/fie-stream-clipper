@@ -30,6 +30,7 @@ base class StreamAnalysis extends Struct {
 }
 
 typedef CallbackFunc = Void Function(Int32);
+typedef CallbackFuncStr = Void Function(Pointer<Utf8>);
 typedef DartCallback = void Function(int);
 
 typedef CutStreamC = Pointer<Void> Function(
@@ -49,6 +50,11 @@ typedef CutStreamDart = Pointer<Void> Function(
     Pointer<Utf8>,
     Pointer<NativeFunction<CallbackFunc>>);
 
+typedef DownloadYoutubeC = Pointer<Void> Function(
+    Pointer<Utf8>, Pointer<NativeFunction<CallbackFuncStr>>);
+typedef DownloadYoutubeDart = Pointer<Void> Function(
+    Pointer<Utf8>, Pointer<NativeFunction<CallbackFuncStr>>);
+
 class NativeLibrary {
   late final DynamicLibrary _lib;
 
@@ -64,4 +70,8 @@ class NativeLibrary {
 
   late final CutStreamDart cutStream =
       _lib.lookup<NativeFunction<CutStreamC>>('cut_stream_async').asFunction();
+
+  late final DownloadYoutubeDart downloadYoutube = _lib
+      .lookup<NativeFunction<DownloadYoutubeC>>('download_stream_async')
+      .asFunction();
 }

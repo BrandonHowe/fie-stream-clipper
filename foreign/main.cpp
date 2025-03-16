@@ -6,6 +6,7 @@ typedef double float64_t;
 #endif
 #ifdef _WIN32
 #define EXPORT __declspec(dllexport)
+#include <windows.h>
 #else
 #define EXPORT __attribute__((visibility("default")))
 #endif
@@ -79,6 +80,7 @@ extern "C" {
     EXPORT void train_nn();
     // EXPORT StreamAnalysis* cut_stream(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, void (*callback)(int));
     EXPORT void cut_stream_async(const char* tesseract_path, const char* svm_path, const char* video_path, uint8_t overlay_id, const char* output_folder, const char* event_name, void (*callback)(int));
+    EXPORT void download_stream_async(const char* youtube_url, void (*callback)(const char*));
 }
 
 int32_t add(int32_t a, int32_t b) {
@@ -691,7 +693,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             while (true) {
                 cv::Mat drawingFrame = frame.clone();
 
-                cv::Rect overlayRect = cv::selectROI("Select the overlay region", drawingFrame);
+                cv::Rect overlayRect = cv::selectROI("Select the overlay region and press ENTER", drawingFrame);
                 int x = overlayRect.x;
                 int y = 0;
                 int width = drawingFrame.cols - overlayRect.x - 1;
@@ -714,7 +716,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
                 std::cout << "Got key: " << key << std::endl;
                 if (key == 127 || key == 8) // Backspace
                 {
-                    cv::destroyWindow("Select the overlay region");
+                    cv::destroyWindow("Select the overlay region and press ENTER");
                     cv::destroyWindow("Press BACKSPACE if the overlay does not line up, otherwise press ENTER");
                     continue;
                 }
@@ -725,7 +727,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
                 overlay.red_score.fromRect(redScoreRect, frame.cols, frame.rows);
                 overlay.green_score.fromRect(greenScoreRect, frame.cols, frame.rows);
 
-                cv::destroyWindow("Select the overlay region");
+                cv::destroyWindow("Select the overlay region and press ENTER");
                 cv::destroyWindow("Press BACKSPACE if the overlay does not line up, otherwise press ENTER");
                 break;
             }
@@ -779,7 +781,7 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
             }
             bool score_nonzero = redScore > 0 || greenScore > 0;
 
-            std::cout << "Score at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
+            // std::cout << "Score at frame " << i << " (" << i / fps << "s, " << i * 100 / frame_count << "%): " << (int)redScore << "-" << (int)greenScore << std::endl;
 
             if (!bout_running && score_nonzero)
             {
@@ -970,5 +972,76 @@ void cut_stream_async(const char* tesseract_path, const char* svm_path, const ch
 
         // Call callback with result
         if (callback) callback(255);
+        }).detach(); // Detach thread to run independently
+}
+
+int download_stream(const std::string& url, char* message)
+{
+    std::cout << "[YT DOWNLOADER] Downloading video from " << url << std::endl;
+#ifdef _WIN32
+    STARTUPINFO si = { sizeof(si) };
+    PROCESS_INFORMATION pi;
+
+    std::string command = "yt-dlp -N 4 -f \"bv*+ba[ext=m4a]/b\" --merge-output-format mp4 --no-progress --no-warnings -o \"TEMP_SOURCE_VIDEO_YOUTUBE.mp4\" " + url;
+
+    // Convert to LPSTR
+    char cmd[1024];
+    strcpy_s(cmd, command.c_str());
+
+    if (CreateProcess(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+    {
+        WaitForSingleObject(pi.hProcess, INFINITE);
+
+        // Get exit code
+        DWORD exitCode;
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        if (exitCode == 0) {
+            std::cout << "[YT DOWNLOADER] Finished downloading video!" << std::endl;
+        }
+        else {
+            std::cerr << "[YT DOWNLOADER] Download failed with exit code: " << exitCode << std::endl;
+        }
+        return exitCode;
+    }
+    else
+    {
+        strncpy(message, "Failed to start YouTube downloader", 1024);
+    }
+#else
+    std::string command = "yt-dlp -o \"TEMP_SOURCE_VIDEO_YOUTUBE.mp4\" " + url + " > /dev/null 2>&1 &";
+    system(command.c_str());
+#endif
+
+    return 0;
+}
+
+void download_stream_async(const char* youtube_url, void (*callback)(const char*)) {
+    std::string url_str(youtube_url);
+    char* message = (char*)malloc(1024 * sizeof(char));
+
+    std::thread([url_str, message, callback]() {
+        try {
+            int exitCode = download_stream(url_str, message);
+            if (exitCode == 0)
+            {
+                strncpy(message, "Finished downloading YouTube video", 1023);
+            }
+            else
+            {
+                std::string error_message = std::string("Download failed with exit code ") + std::to_string(exitCode);
+                strncpy(message, error_message.c_str(), 1023);
+            }
+        }
+        catch (const std::exception& e)
+        {
+            std::string str = std::string("Exception: ") + e.what();
+            strncpy(message, str.c_str(), 1023);
+        }
+
+        // Call callback with result
+        if (callback) callback(message);
         }).detach(); // Detach thread to run independently
 }
