@@ -269,7 +269,7 @@ class _MainAppState extends State<MainApp> {
         appBar: AppBar(title: Text('FIE Stream Clipper')),
         bottomNavigationBar: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text("Version 0.3.0 (3/16/2025)", textAlign: TextAlign.center),
+          child: Text("Version 0.3.2 (3/22/2025)", textAlign: TextAlign.center),
         ),
         body: DropTarget(
             onDragDone: (detail) {

@@ -165,8 +165,8 @@ const OverlayConfig OVERLAY_USA_STANDARD = {
     .symmetric_threshold = true,
     .red = {.x = (float)0 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
     .green = {.x = (float)1200 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
-    .red_score = {.x = (float)624 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
-    .green_score = {.x = (float)1100 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
+    .red_score = {.x = (float)635 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
+    .green_score = {.x = (float)1115 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)75 / 1030 },
     .red_name = {.x = (float)0 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
     .green_name = {.x = (float)1200 / 1830, .y = (float)950 / 1030, .width = (float)624 / 1830, .height = (float)75 / 1030 },
     .time = {.x = (float)867 / 1830, .y = (float)950 / 1030, .width = (float)100 / 1830, .height = (float)48 / 1030 },
@@ -374,8 +374,8 @@ int8_t classify_score(const cv::Ptr<cv::ml::SVM>& svm, cv::Mat& region, OverlayC
         // std::cout << "Content count: " << contentCount << ", threshold: " << (overlay.threshold * thresholded.rows * thresholded.cols) << std::endl;
     }
 
-    // imshow("tracker", thresholded);
-    // cv::waitKey(500);
+    bool has_zeroes = cv::countNonZero(thresholded == 0);
+    if (!has_zeroes) return -1;
 
     if (over_10)
     {
@@ -686,7 +686,37 @@ extern "C" StreamAnalysis* cut_stream(const std::string& tesseract_path, const s
 
         cv::Mat frame;
 
-        if (overlay_id == 3)
+        if (overlay_id == 2) // Detect height of USA fencing overlay
+        {
+            cap.read(frame);
+            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+
+            for (int i = frame.rows - 1; i >= 0; --i) {
+                int threshold = 10;
+                cv::Vec3b pixel = frame.at<cv::Vec3b>(i, 0);
+                if (pixel[0] > threshold || pixel[1] > threshold || pixel[2] > threshold) {
+                    int pixel_height = height - i - 1;
+
+                    float y_offset = (float)i / frame.rows;
+                    overlay.red.y = y_offset;
+                    overlay.green.y = y_offset;
+                    overlay.red_score.y = y_offset;
+                    overlay.green_score.y = y_offset;
+                    overlay.red_name.y = y_offset;
+                    overlay.green_name.y = y_offset;
+
+                    float height = (float)pixel_height / frame.rows;
+                    overlay.red.height = height;
+                    overlay.green.height = height;
+                    overlay.red_score.height = height;
+                    overlay.green_score.height = height;
+                    overlay.red_name.height = height;
+                    overlay.green_name.height = height;
+                    break;
+                }
+            }
+        }
+        if (overlay_id == 3) // Detect size of Turkish overlay
         {
             cap.read(frame);
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
@@ -982,7 +1012,7 @@ int download_stream(const std::string& url, char* message)
     STARTUPINFO si = { sizeof(si) };
     PROCESS_INFORMATION pi;
 
-    std::string command = "yt-dlp -N 4 -f \"bv*+ba[ext=m4a]/b\" --merge-output-format mp4 --no-progress --no-warnings -o \"TEMP_SOURCE_VIDEO_YOUTUBE.mp4\" " + url;
+    std::string command = "yt-dlp --cookies-from-browser firefox -N 4 -f \"bv*+ba[ext=m4a]/b\" --merge-output-format mp4 --no-progress --no-warnings -o \"TEMP_SOURCE_VIDEO_YOUTUBE.mp4\" " + url;
 
     // Convert to LPSTR
     char cmd[1024];

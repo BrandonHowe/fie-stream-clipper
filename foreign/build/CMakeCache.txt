@@ -188,8 +188,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 // during RELWITHDEBINFO builds.
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=D:/vcpkg/scripts/buildsystems/vcpkg.cmake
+//No help, variable specified on the command line.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=D:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -313,6 +313,8 @@ LibArchive_LIBRARY:FILEPATH=D:/vcpkg/installed/x64-windows/lib/archive.lib
 
 //The directory containing a CMake configuration file for OpenJPEG.
 OpenJPEG_DIR:PATH=D:/vcpkg/installed/x64-windows/share/openjpeg
+
+PKG_CONFIG_EXECUTABLE:STRING=D:/vcpkg/installed/x64-windows/share/ffmpeg/../../../x64-windows/tools/pkgconf/pkgconf.exe
 
 //Automatically copy dependencies into the output directory for
 // executables.

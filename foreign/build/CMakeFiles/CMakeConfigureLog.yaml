@@ -24,7 +24,7 @@ events:
       The output was:
       0
       MSBuild version 17.9.8+b34f75857 for .NET Framework
-      Build started 3/16/2025 7:40:11 PM.
+      Build started 3/22/2025 8:22:13 PM.
       
       Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\3.29.3\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -62,7 +62,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:01.21
+      Time Elapsed 00:00:01.35
       
       
       Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -88,7 +88,7 @@ events:
       The output was:
       0
       MSBuild version 17.9.8+b34f75857 for .NET Framework
-      Build started 3/16/2025 7:40:13 PM.
+      Build started 3/22/2025 8:22:15 PM.
       
       Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\3.29.3\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
       PrepareForBuild:
@@ -126,7 +126,7 @@ events:
           0 Warning(s)
           0 Error(s)
       
-      Time Elapsed 00:00:00.89
+      Time Elapsed 00:00:00.90
       
       
       Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -145,8 +145,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-rcxict"
-      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-rcxict"
+      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-eiax14"
+      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-eiax14"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -159,40 +159,40 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-rcxict'
+        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-eiax14'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_3cce9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_014cd.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.9.8+b34f75857 for .NET Framework
-        Build started 3/16/2025 7:40:14 PM.
+        Build started 3/22/2025 8:22:16 PM.
         
-        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-rcxict\\cmTC_3cce9.vcxproj" on node 1 (default targets).
+        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-eiax14\\cmTC_014cd.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_3cce9.dir\\Debug\\".
+          Creating directory "cmTC_014cd.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-rcxict\\Debug\\".
-          Creating directory "cmTC_3cce9.dir\\Debug\\cmTC_3cce9.tlog\\".
+          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-eiax14\\Debug\\".
+          Creating directory "cmTC_014cd.dir\\Debug\\cmTC_014cd.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_3cce9.dir\\Debug\\cmTC_3cce9.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_3cce9.dir\\Debug\\cmTC_3cce9.tlog\\unsuccessfulbuild".
+          Creating "cmTC_014cd.dir\\Debug\\cmTC_014cd.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_014cd.dir\\Debug\\cmTC_014cd.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3cce9.dir\\Debug\\\\" /Fd"cmTC_3cce9.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_014cd.dir\\Debug\\\\" /Fd"cmTC_014cd.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33523 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3cce9.dir\\Debug\\\\" /Fd"cmTC_3cce9.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_014cd.dir\\Debug\\\\" /Fd"cmTC_014cd.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCCompilerABI.c"
           CMakeCCompilerABI.c
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-rcxict\\Debug\\cmTC_3cce9.exe" /INCREMENTAL /ILK:"cmTC_3cce9.dir\\Debug\\cmTC_3cce9.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-rcxict/Debug/cmTC_3cce9.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-rcxict/Debug/cmTC_3cce9.lib" /MACHINE:X64  /machine:x64 cmTC_3cce9.dir\\Debug\\CMakeCCompilerABI.obj
-          cmTC_3cce9.vcxproj -> D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-rcxict\\Debug\\cmTC_3cce9.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-eiax14\\Debug\\cmTC_014cd.exe" /INCREMENTAL /ILK:"cmTC_014cd.dir\\Debug\\cmTC_014cd.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-eiax14/Debug/cmTC_014cd.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-eiax14/Debug/cmTC_014cd.lib" /MACHINE:X64  /machine:x64 cmTC_014cd.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_014cd.vcxproj -> D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-eiax14\\Debug\\cmTC_014cd.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_3cce9.dir\\Debug\\cmTC_3cce9.tlog\\unsuccessfulbuild".
-          Touching "cmTC_3cce9.dir\\Debug\\cmTC_3cce9.tlog\\cmTC_3cce9.lastbuildstate".
-        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-rcxict\\cmTC_3cce9.vcxproj" (default targets).
+          Deleting file "cmTC_014cd.dir\\Debug\\cmTC_014cd.tlog\\unsuccessfulbuild".
+          Touching "cmTC_014cd.dir\\Debug\\cmTC_014cd.tlog\\cmTC_014cd.lastbuildstate".
+        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-eiax14\\cmTC_014cd.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.71
+        Time Elapsed 00:00:00.61
         
       exitCode: 0
   -
@@ -232,8 +232,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-ouufma"
-      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-ouufma"
+      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-qoxkjo"
+      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-qoxkjo"
     cmakeVariables:
       CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
       CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -247,40 +247,40 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-ouufma'
+        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-qoxkjo'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_d46d4.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_42cce.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.9.8+b34f75857 for .NET Framework
-        Build started 3/16/2025 7:40:15 PM.
+        Build started 3/22/2025 8:22:17 PM.
         
-        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ouufma\\cmTC_d46d4.vcxproj" on node 1 (default targets).
+        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qoxkjo\\cmTC_42cce.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_d46d4.dir\\Debug\\".
+          Creating directory "cmTC_42cce.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ouufma\\Debug\\".
-          Creating directory "cmTC_d46d4.dir\\Debug\\cmTC_d46d4.tlog\\".
+          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qoxkjo\\Debug\\".
+          Creating directory "cmTC_42cce.dir\\Debug\\cmTC_42cce.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_d46d4.dir\\Debug\\cmTC_d46d4.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_d46d4.dir\\Debug\\cmTC_d46d4.tlog\\unsuccessfulbuild".
+          Creating "cmTC_42cce.dir\\Debug\\cmTC_42cce.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_42cce.dir\\Debug\\cmTC_42cce.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_d46d4.dir\\Debug\\\\" /Fd"cmTC_d46d4.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_42cce.dir\\Debug\\\\" /Fd"cmTC_42cce.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33523 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_d46d4.dir\\Debug\\\\" /Fd"cmTC_d46d4.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_42cce.dir\\Debug\\\\" /Fd"cmTC_42cce.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "C:\\Program Files\\CMake\\share\\cmake-3.29\\Modules\\CMakeCXXCompilerABI.cpp"
           CMakeCXXCompilerABI.cpp
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ouufma\\Debug\\cmTC_d46d4.exe" /INCREMENTAL /ILK:"cmTC_d46d4.dir\\Debug\\cmTC_d46d4.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-ouufma/Debug/cmTC_d46d4.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-ouufma/Debug/cmTC_d46d4.lib" /MACHINE:X64  /machine:x64 cmTC_d46d4.dir\\Debug\\CMakeCXXCompilerABI.obj
-          cmTC_d46d4.vcxproj -> D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ouufma\\Debug\\cmTC_d46d4.exe
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qoxkjo\\Debug\\cmTC_42cce.exe" /INCREMENTAL /ILK:"cmTC_42cce.dir\\Debug\\cmTC_42cce.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-qoxkjo/Debug/cmTC_42cce.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-qoxkjo/Debug/cmTC_42cce.lib" /MACHINE:X64  /machine:x64 cmTC_42cce.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_42cce.vcxproj -> D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qoxkjo\\Debug\\cmTC_42cce.exe
         FinalizeBuildStatus:
-          Deleting file "cmTC_d46d4.dir\\Debug\\cmTC_d46d4.tlog\\unsuccessfulbuild".
-          Touching "cmTC_d46d4.dir\\Debug\\cmTC_d46d4.tlog\\cmTC_d46d4.lastbuildstate".
-        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-ouufma\\cmTC_d46d4.vcxproj" (default targets).
+          Deleting file "cmTC_42cce.dir\\Debug\\cmTC_42cce.tlog\\unsuccessfulbuild".
+          Touching "cmTC_42cce.dir\\Debug\\cmTC_42cce.tlog\\cmTC_42cce.lastbuildstate".
+        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-qoxkjo\\cmTC_42cce.vcxproj" (default targets).
         
         Build succeeded.
             0 Warning(s)
             0 Error(s)
         
-        Time Elapsed 00:00:00.52
+        Time Elapsed 00:00:00.51
         
       exitCode: 0
   -
@@ -332,8 +332,8 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-5otoz9"
-      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-5otoz9"
+      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-n0nr8a"
+      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-n0nr8a"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -346,40 +346,40 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-5otoz9'
+        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-n0nr8a'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_46140.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_c96ed.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.9.8+b34f75857 for .NET Framework
-        Build started 3/16/2025 7:40:16 PM.
+        Build started 3/22/2025 8:22:18 PM.
         
-        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\cmTC_46140.vcxproj" on node 1 (default targets).
+        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\cmTC_c96ed.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_46140.dir\\Debug\\".
+          Creating directory "cmTC_c96ed.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\Debug\\".
-          Creating directory "cmTC_46140.dir\\Debug\\cmTC_46140.tlog\\".
+          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\Debug\\".
+          Creating directory "cmTC_c96ed.dir\\Debug\\cmTC_c96ed.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_46140.dir\\Debug\\cmTC_46140.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_46140.dir\\Debug\\cmTC_46140.tlog\\unsuccessfulbuild".
+          Creating "cmTC_c96ed.dir\\Debug\\cmTC_c96ed.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_c96ed.dir\\Debug\\cmTC_c96ed.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_46140.dir\\Debug\\\\" /Fd"cmTC_46140.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\src.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c96ed.dir\\Debug\\\\" /Fd"cmTC_c96ed.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\src.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33523 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_46140.dir\\Debug\\\\" /Fd"cmTC_46140.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\src.c"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c96ed.dir\\Debug\\\\" /Fd"cmTC_c96ed.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\src.c"
           src.c
-        D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\cmTC_46140.vcxproj]
-        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\cmTC_46140.vcxproj" (default targets) -- FAILED.
+        D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\cmTC_c96ed.vcxproj]
+        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\cmTC_c96ed.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\cmTC_46140.vcxproj" (default target) (1) ->
+        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\cmTC_c96ed.vcxproj" (default target) (1) ->
         (ClCompile target) -> 
-          D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-5otoz9\\cmTC_46140.vcxproj]
+          D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\src.c(1,10): error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-n0nr8a\\cmTC_c96ed.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.37
+        Time Elapsed 00:00:00.31
         
       exitCode: 1
   -
@@ -402,8 +402,8 @@ events:
     checks:
       - "Looking for pthread_create in pthreads"
     directories:
-      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-hzunj3"
-      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-hzunj3"
+      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-fm93n3"
+      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-fm93n3"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -416,37 +416,37 @@ events:
       variable: "CMAKE_HAVE_PTHREADS_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-hzunj3'
+        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-fm93n3'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_75939.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_0a509.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.9.8+b34f75857 for .NET Framework
-        Build started 3/16/2025 7:40:16 PM.
+        Build started 3/22/2025 8:22:18 PM.
         
-        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\cmTC_75939.vcxproj" on node 1 (default targets).
+        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\cmTC_0a509.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_75939.dir\\Debug\\".
+          Creating directory "cmTC_0a509.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\Debug\\".
-          Creating directory "cmTC_75939.dir\\Debug\\cmTC_75939.tlog\\".
+          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\Debug\\".
+          Creating directory "cmTC_0a509.dir\\Debug\\cmTC_0a509.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_75939.dir\\Debug\\cmTC_75939.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_75939.dir\\Debug\\cmTC_75939.tlog\\unsuccessfulbuild".
+          Creating "cmTC_0a509.dir\\Debug\\cmTC_0a509.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_0a509.dir\\Debug\\cmTC_0a509.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_75939.dir\\Debug\\\\" /Fd"cmTC_75939.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\CheckFunctionExists.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0a509.dir\\Debug\\\\" /Fd"cmTC_0a509.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33523 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_75939.dir\\Debug\\\\" /Fd"cmTC_75939.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\CheckFunctionExists.c"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_0a509.dir\\Debug\\\\" /Fd"cmTC_0a509.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\Debug\\cmTC_75939.exe" /INCREMENTAL /ILK:"cmTC_75939.dir\\Debug\\cmTC_75939.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-hzunj3/Debug/cmTC_75939.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-hzunj3/Debug/cmTC_75939.lib" /MACHINE:X64  /machine:x64 cmTC_75939.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\cmTC_75939.vcxproj]
-        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\cmTC_75939.vcxproj" (default targets) -- FAILED.
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\Debug\\cmTC_0a509.exe" /INCREMENTAL /ILK:"cmTC_0a509.dir\\Debug\\cmTC_0a509.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-fm93n3/Debug/cmTC_0a509.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-fm93n3/Debug/cmTC_0a509.lib" /MACHINE:X64  /machine:x64 cmTC_0a509.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\cmTC_0a509.vcxproj]
+        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\cmTC_0a509.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\cmTC_75939.vcxproj" (default target) (1) ->
+        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\cmTC_0a509.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-hzunj3\\cmTC_75939.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-fm93n3\\cmTC_0a509.vcxproj]
         
             0 Warning(s)
             1 Error(s)
@@ -474,8 +474,8 @@ events:
     checks:
       - "Looking for pthread_create in pthread"
     directories:
-      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-udslzn"
-      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-udslzn"
+      source: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-8y1d02"
+      binary: "D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-8y1d02"
     cmakeVariables:
       CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
       CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
@@ -488,42 +488,42 @@ events:
       variable: "CMAKE_HAVE_PTHREAD_CREATE"
       cached: true
       stdout: |
-        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-udslzn'
+        Change Dir: 'D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-8y1d02'
         
-        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_608a7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_c9907.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
         MSBuild version 17.9.8+b34f75857 for .NET Framework
-        Build started 3/16/2025 7:40:17 PM.
+        Build started 3/22/2025 8:22:19 PM.
         
-        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\cmTC_608a7.vcxproj" on node 1 (default targets).
+        Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\cmTC_c9907.vcxproj" on node 1 (default targets).
         PrepareForBuild:
-          Creating directory "cmTC_608a7.dir\\Debug\\".
+          Creating directory "cmTC_c9907.dir\\Debug\\".
           Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
-          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\Debug\\".
-          Creating directory "cmTC_608a7.dir\\Debug\\cmTC_608a7.tlog\\".
+          Creating directory "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\Debug\\".
+          Creating directory "cmTC_c9907.dir\\Debug\\cmTC_c9907.tlog\\".
         InitializeBuildStatus:
-          Creating "cmTC_608a7.dir\\Debug\\cmTC_608a7.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
-          Touching "cmTC_608a7.dir\\Debug\\cmTC_608a7.tlog\\unsuccessfulbuild".
+          Creating "cmTC_c9907.dir\\Debug\\cmTC_c9907.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+          Touching "cmTC_c9907.dir\\Debug\\cmTC_c9907.tlog\\unsuccessfulbuild".
         ClCompile:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_608a7.dir\\Debug\\\\" /Fd"cmTC_608a7.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\CheckFunctionExists.c"
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c9907.dir\\Debug\\\\" /Fd"cmTC_c9907.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\CheckFunctionExists.c"
           Microsoft (R) C/C++ Optimizing Compiler Version 19.39.33523 for x64
           Copyright (C) Microsoft Corporation.  All rights reserved.
-          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_608a7.dir\\Debug\\\\" /Fd"cmTC_608a7.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\CheckFunctionExists.c"
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c9907.dir\\Debug\\\\" /Fd"cmTC_c9907.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\CheckFunctionExists.c"
           CheckFunctionExists.c
         Link:
-          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\Debug\\cmTC_608a7.exe" /INCREMENTAL /ILK:"cmTC_608a7.dir\\Debug\\cmTC_608a7.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-udslzn/Debug/cmTC_608a7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-udslzn/Debug/cmTC_608a7.lib" /MACHINE:X64  /machine:x64 cmTC_608a7.dir\\Debug\\CheckFunctionExists.obj
-        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\cmTC_608a7.vcxproj]
-        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\cmTC_608a7.vcxproj" (default targets) -- FAILED.
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.39.33519\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\Debug\\cmTC_c9907.exe" /INCREMENTAL /ILK:"cmTC_c9907.dir\\Debug\\cmTC_c9907.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-8y1d02/Debug/cmTC_c9907.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/OldDocuments/Projects/fie-stream-clipper/foreign/build/CMakeFiles/CMakeScratch/TryCompile-8y1d02/Debug/cmTC_c9907.lib" /MACHINE:X64  /machine:x64 cmTC_c9907.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\cmTC_c9907.vcxproj]
+        Done Building Project "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\cmTC_c9907.vcxproj" (default targets) -- FAILED.
         
         Build FAILED.
         
-        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\cmTC_608a7.vcxproj" (default target) (1) ->
+        "D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\cmTC_c9907.vcxproj" (default target) (1) ->
         (Link target) -> 
-          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-udslzn\\cmTC_608a7.vcxproj]
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\OldDocuments\\Projects\\fie-stream-clipper\\foreign\\build\\CMakeFiles\\CMakeScratch\\TryCompile-8y1d02\\cmTC_c9907.vcxproj]
         
             0 Warning(s)
             1 Error(s)
         
-        Time Elapsed 00:00:00.39
+        Time Elapsed 00:00:00.40
         
       exitCode: 1
 ...
